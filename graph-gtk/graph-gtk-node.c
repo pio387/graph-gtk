@@ -46,6 +46,12 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cairo)
   //Draw the node with cairo
 }
 
+GraphGtkNode*
+graph_gtk_node_new()
+{
+  return GRAPH_GTK_NODE(g_object_new(GRAPH_TYPE_GTK_NODE, NULL));
+}
+
 void
 graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo)
 {
@@ -81,7 +87,7 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
   for(list = graph_gtk_node_get_pads(source); list != NULL; list++)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
-      if(g_strcmp0(pad->name, output_pad))
+      if(0 == g_strcmp0(pad->name, output_pad))
 	{
 	  source_pad = pad;
 	  break;
@@ -91,7 +97,7 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
   for(list = graph_gtk_node_get_pads(sink); list != NULL; list++)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
-      if(g_strcmp0(pad->name, input_pad))
+      if(0 == g_strcmp0(pad->name, input_pad))
 	{
 	  sink_pad = pad;
 	  break;
@@ -107,6 +113,38 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 void
 graph_gtk_node_recalculate_size(GraphGtkNode* source)
 {
-  //Recalculate size of the node based on number of pads and pad-name lengths
+  //Recalculate size of the node based on number of pads and pad-name lengths and update pad relative positions if necessary
   //...
+  
+}
+
+void
+graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name)
+{
+  self->name = name;
+}
+
+void
+graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output)
+{
+  if(output) 
+    {
+      GSList* list;
+      for(list = self->output_pads; list != NULL && g_strcmp0(((GraphGtkPad*)list->data)->name, pad_name); list = list->next);
+      if(!list) {
+	GraphGtkPad* pad = graph_gtk_pad_new(pad_name, TRUE);
+	self->output_pads = g_slist_append(self->output_pads, pad);
+      }
+    }
+  else
+    {
+      GSList* list;
+      for(list = self->input_pads; list != NULL && g_strcmp0(((GraphGtkPad*)list->data)->name, pad_name); list = list->next);
+      if(!list) {
+	GraphGtkPad* pad = graph_gtk_pad_new(pad_name, FALSE);
+	self->input_pads = g_slist_append(self->input_pads, pad);
+      }
+    }
+
+  graph_gtk_node_recalculate_size(self);
 }

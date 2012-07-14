@@ -46,6 +46,15 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cairo)
   
 }
 
+GraphGtkPad*
+graph_gtk_pad_new(const gchar* name, gboolean is_output)
+{
+  GraphGtkPad *pad = GRAPH_GTK_PAD(g_object_new(GRAPH_TYPE_GTK_PAD, NULL));
+  pad->name = name;
+  pad->is_output = is_output;
+  return pad;
+}
+
 void
 graph_gtk_pad_render(GraphGtkPad* self, cairo_t* cairo)
 {

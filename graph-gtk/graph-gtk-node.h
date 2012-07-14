@@ -54,8 +54,10 @@ struct _GraphGtkNode
 
 GType graph_gtk_node_get_type (void) G_GNUC_CONST;
 
+GraphGtkNode* graph_gtk_node_new();
+void graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name);
 void	graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo);
-void	graph_gtk_node_add_pad(GraphGtkNode* source);
+void	graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output);
 GSList* graph_gtk_node_get_pads(GraphGtkNode* self);
 GSList* graph_gtk_node_get_input_pads(GraphGtkNode* self);
 GSList* graph_gtk_node_get_output_pads(GraphGtkNode* self);
