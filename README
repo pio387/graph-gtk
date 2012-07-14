@@ -1,9 +1,14 @@
-(c) Isaac Wagner 2012 - isaacbwagner@gmail.com 
+Copyright (c) 2012 Isaac Wagner 2012 <isaacbwagner@gmail.com>
 
 GRAPH-GTK
 =========
+Graph-gtk is a library which allows easy integration of a graphical node editor in Gtk+ applications. This node editor is a custom widget which is extensible, customizable, and usable in virtually any application where the user should be able to interact with a graph via a graphical interface.
 
-Graph-gtk is a library which allows easy integration of a graphical node editor in Gtk+ applications. This node editor is a custom widget which is extensible, customizable, and usable in virtually any application where the user should be able to interact with a graph via a graphical interface. Currently graph-gtk expects underlying graphics to follow an input->output paradigm (i.e. directed graphs), however plans for the future include generalizing the structure to allow for any sort of graph.
+Currently graph-gtk expects underlying graphics to follow an input->output paradigm (i.e. directed graphs), however plans for the future include generalizing the structure to allow for any sort of graph.
+
+Users of the library may write custom rendering code for every part of the graph by subclassing various classes within the library.
+
+The developer connects to a number of signals within graph-gtk and modifies the underlying graph structure (if any) in response to those signals. The graph information can also be collected all at once, such as when the user is done constructing the graph and ready to 'build' the underlying structure. Graph-gtk is very flexible and makes no assumptions about how developers wish to use it.
 
 COPYING
 =======

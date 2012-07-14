@@ -43,7 +43,7 @@ graph_gtk_pad_finalize (GObject *object)
 static void
 graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cairo)
 {
-
+  
 }
 
 void

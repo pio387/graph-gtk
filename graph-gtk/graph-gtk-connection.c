@@ -40,6 +40,12 @@ graph_gtk_connection_finalize (GObject *object)
     G_OBJECT_CLASS (graph_gtk_connection_parent_class)->finalize (object);
 }
 
+static void 
+graph_gtk_connection_default_render(GraphGtkConnection* self, cairo_t* cairo)
+{
+  
+}
+
 void 
 graph_gtk_connection_render(GraphGtkConnection* self, cairo_t* cairo)
 {
