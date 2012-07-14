@@ -75,7 +75,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
     Need to figure out a clean way of letting the user render a custom background, such as the 
     result of the combined graph operations. This should either be a signal or simply let the
     user set a cairo surface property on the GeglGtkView. For now just render a solid grey background
-   */
+  */
 
   cairo_set_source_rgb(cr, 0.82, 0.82, 0.82);
   cairo_paint(cr);

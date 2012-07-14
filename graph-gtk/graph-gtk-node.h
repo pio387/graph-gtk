@@ -32,14 +32,13 @@ typedef struct _GraphGtkNodeClass GraphGtkNodeClass;
 
 struct _GraphGtkNodeClass
 {
-    GObjectClass parent_class;
-
+  GObjectClass parent_class;
   void (*render_node) (GraphGtkNode* self, cairo_t* cairo);
 };
 
 struct _GraphGtkNode
 {
-    GObject parent;
+  GObject parent;
 
   GSList* input_pads;
   GSList* output_pads;
@@ -48,7 +47,6 @@ struct _GraphGtkNode
 
   gboolean resizable;
 
-
   /* Rendering state */
   gint x, y; //coordinate position
   gint width, height;
@@ -56,11 +54,11 @@ struct _GraphGtkNode
 
 GType graph_gtk_node_get_type (void) G_GNUC_CONST;
 
-void graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo);
+void	graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo);
 GSList* graph_gtk_node_get_pads(GraphGtkNode* self);
 GSList* graph_gtk_node_get_input_pads(GraphGtkNode* self);
 GSList* graph_gtk_node_get_output_pads(GraphGtkNode* self);
-void graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad);
+void	graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad);
 
 G_END_DECLS
 

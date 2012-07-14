@@ -32,14 +32,13 @@ typedef struct _GraphGtkConnectionClass GraphGtkConnectionClass;
 
 struct _GraphGtkConnectionClass
 {
-    GObjectClass parent_class;
+  GObjectClass parent_class;
   void (*render_connection) (GraphGtkConnection* self, cairo_t* cairo);
-
 };
 
 struct _GraphGtkConnection
 {
-    GObject parent;
+  GObject parent;
 
   GraphGtkPad *source, *sink;
 };

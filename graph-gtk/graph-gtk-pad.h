@@ -34,17 +34,15 @@ typedef struct _GraphGtkPadClass GraphGtkPadClass;
 
 struct _GraphGtkPadClass
 {
-    GObjectClass parent_class;
+  GObjectClass parent_class;
   void (*render_pad) (GraphGtkPad* self, cairo_t* t);
-
 };
 
 struct _GraphGtkPad
 {
-    GObject parent;
+  GObject parent;
 
   GraphGtkNode* node; //node to which this pad is attached
-
 
   gint rel_x, rel_y; //coordinates of the center this pad relative to the containing node's coordinates. These values are set by the containing node when the node is constructed and if/when the node is resized. It is up to the containing node to made sure these coordinates are up to date
   gboolean is_output; //by default (*only* option right now), input pads can only have one connection. New connections replace old connections
@@ -53,9 +51,8 @@ struct _GraphGtkPad
 
 GType graph_gtk_pad_get_type (void) G_GNUC_CONST;
 
-//get global coordinates (rel_x/y + containing node's x/y)
-void graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y);
-void graph_gtk_pad_render(GraphGtkPad* self, cairo_t* cairo);
+void	graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y);
+void	graph_gtk_pad_render(GraphGtkPad* self, cairo_t* cairo);
 
 G_END_DECLS
 

@@ -32,12 +32,12 @@ typedef struct _GraphGtkViewClass GraphGtkViewClass;
 
 struct _GraphGtkViewClass
 {
-    GtkDrawingAreaClass parent_class;
+  GtkDrawingAreaClass parent_class;
 };
 
 struct _GraphGtkView
 {
-    GtkDrawingArea parent;
+  GtkDrawingArea parent;
 
   GSList* nodes;
 
@@ -53,11 +53,11 @@ struct _GraphGtkView
 
 GType graph_gtk_view_get_type (void) G_GNUC_CONST;
 
-GtkWidget *graph_gtk_view_new(void);
-void graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node);
-void graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node);
-void graph_gtk_view_clear(GraphGtkView* self);
-GSList* graph_gtk_view_get_nodes(GraphGtkView* self);
+GtkWidget*	graph_gtk_view_new(void);
+void		graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node);
+void		graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node);
+void		graph_gtk_view_clear(GraphGtkView* self);
+GSList*		graph_gtk_view_get_nodes(GraphGtkView* self);
 
 G_END_DECLS
 
