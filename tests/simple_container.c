@@ -33,13 +33,15 @@ main(gint argc,
   //g_signal_connect
   gtk_menu_shell_append(GTK_MENU_SHELL(graph_menu), add_node);
 
-  delete = gtk_menu_item_new_with_label("Delete");
+  delete = gtk_menu_item_new_with_label("Delete Node");
   //g_signal_connect
   gtk_menu_shell_append(GTK_MENU_SHELL(graph_menu), delete);
 
   auto_arrange = gtk_menu_item_new_with_label("Auto-arrange");
   //g_signal_connect
   gtk_menu_shell_append(GTK_MENU_SHELL(graph_menu), auto_arrange);
+
+  gtk_menu_shell_append(GTK_MENU_SHELL(menubar), graph);
 
   gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), graphView, TRUE, TRUE, 0);

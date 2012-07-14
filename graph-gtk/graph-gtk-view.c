@@ -96,3 +96,41 @@ graph_gtk_view_new()
 {
   return g_object_new(GRAPH_TYPE_GTK_VIEW, NULL);
 }
+
+void
+graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node)
+{
+  if(!g_slist_find(self->nodes, node))
+    {
+      g_object_ref_sink(G_OBJECT(node)); //is sink the right thing to do here?
+      self->nodes = g_slist_append(self->nodes, node);
+    }
+}
+
+void
+graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
+{
+  if(g_slist_find(self->nodes, node))
+    {
+      self->nodes = g_slist_remove(self->nodes, node);
+      g_object_unref(G_OBJECT(node));
+    }
+}
+
+void
+graph_gtk_view_clear(GraphGtkView* self)
+{
+  GSList* list;
+  for(list = self->nodes; list != NULL; list = list->next)
+    {
+      g_object_unref(G_OBJECT(list->data));
+    }
+
+  self->nodes = NULL;
+}
+
+GSList*
+graph_gtk_view_get_nodes(GraphGtkView* self)
+{
+  return self->nodes; 
+}
