@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include <graph-gtk.h>
+#include <graph-gtk-view.h>
 
 gint
 main(gint argc, 
@@ -7,7 +7,7 @@ main(gint argc,
 {
   gtk_init(&argc, &argv);
     
-  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOP_LEVEL);
+  GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
   g_signal_connect (window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     

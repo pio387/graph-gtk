@@ -2,7 +2,7 @@
 #define __GRAPH_GTK_CONNECTION_H__
 
 #include <glib-object.h>
-
+#include "graph-gtk-pad.h"
 
 G_BEGIN_DECLS
 
@@ -33,14 +33,15 @@ typedef struct _GraphGtkConnectionClass GraphGtkConnectionClass;
 struct _GraphGtkConnectionClass
 {
     GObjectClass parent_class;
+  void (*render_connection) (GraphGtkConnection* self, cairo_t* cairo);
+
 };
 
 struct _GraphGtkConnection
 {
     GObject parent;
 
-  GraphGtkNode *source, *sink;
-  void (*render_connection) (GraphGtkConnection* self, cairo_t* cairo);
+  GraphGtkPad *source, *sink;
 };
 
 GType graph_gtk_connection_get_type (void) G_GNUC_CONST;

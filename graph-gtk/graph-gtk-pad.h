@@ -2,7 +2,9 @@
 #define __GRAPH_GTK_PAD_H__
 
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
+#include "graph-gtk-node.h"
 
 G_BEGIN_DECLS
 
@@ -33,6 +35,8 @@ typedef struct _GraphGtkPadClass GraphGtkPadClass;
 struct _GraphGtkPadClass
 {
     GObjectClass parent_class;
+  void (*render_pad) (GraphGtkPad* self, cairo_t* t);
+
 };
 
 struct _GraphGtkPad
@@ -41,7 +45,6 @@ struct _GraphGtkPad
 
   GraphGtkNode* node; //node to which this pad is attached
 
-  void (*render_pad) (GraphGtkPad* self, cairo_t* t);
 
   gint rel_x, rel_y; //coordinates of the center this pad relative to the containing node's coordinates. These values are set by the containing node when the node is constructed and if/when the node is resized. It is up to the containing node to made sure these coordinates are up to date
   gboolean is_output; //by default (*only* option right now), input pads can only have one connection. New connections replace old connections

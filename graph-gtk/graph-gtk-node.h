@@ -2,7 +2,7 @@
 #define __GRAPH_GTK_NODE_H__
 
 #include <glib-object.h>
-
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -33,6 +33,8 @@ typedef struct _GraphGtkNodeClass GraphGtkNodeClass;
 struct _GraphGtkNodeClass
 {
     GObjectClass parent_class;
+
+  void (*render_node) (GraphGtkNode* self, cairo_t* cairo);
 };
 
 struct _GraphGtkNode
@@ -46,7 +48,6 @@ struct _GraphGtkNode
 
   gboolean resizable;
 
-  void (*render_node) (GraphGtkNode* self, cairo_t* cairo) = NULL;
 
   /* Rendering state */
   gint x, y; //coordinate position

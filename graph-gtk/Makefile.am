@@ -1,13 +1,14 @@
-AM_CFLAGS = $(GLIB_CFLAGS) $(GTK_CFLAGS) $(CAIRO_CFLAGS)
+AM_CFLAGS = $(GTK_CFLAGS) 
+LIBS = $(GTK_LIBS)
 
 lib_LTLIBRARIES = libgraph-gtk.la
 
-include_HEADERS = 		graph_gtk_view.h	\
-				graph_gtk_node.h	\
-				graph_gtk_pad.h		\
-				graph_gtk_connection.h
+pkginclude_HEADERS = 		graph-gtk-view.h	\
+				graph-gtk-node.h	\
+				graph-gtk-pad.h		\
+				graph-gtk-connection.h
 
-libgraph-gtk_la_SOURCES = 	graph_gtk_view.c	\
-				graph_gtk_node.c	\
-				graph_gtk_pad.c		\
-				graph_gtk_connection.c
+libgraph_gtk_la_SOURCES = 	graph-gtk-view.c	\
+				graph-gtk-node.c	\
+				graph-gtk-pad.c		\
+				graph-gtk-connection.c

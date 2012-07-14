@@ -4,10 +4,10 @@
 static void graph_gtk_view_dispose (GObject *object);
 static void graph_gtk_view_finalize (GObject *object);
 
-static void graph_gtk_view_draw(GtkWidget* self, cairo_t* cairo);
+static gboolean graph_gtk_view_draw(GtkWidget* self, cairo_t* cairo);
 
 #if GTK_MAJOR_VERSION == (2)
-static gboolean graph_gtk_view_expose(GtkWidget* self, GdkExposeEvent* event);
+static gboolean graph_gtk_view_expose(GtkWidget* self, GdkEventExpose* event);
 #endif
 
 G_DEFINE_TYPE (GraphGtkView, graph_gtk_view, GTK_TYPE_DRAWING_AREA);
@@ -89,4 +89,10 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
     }
 
   return FALSE;
+}
+
+GtkWidget*
+graph_gtk_view_new()
+{
+  return g_object_new(GRAPH_TYPE_GTK_VIEW, NULL);
 }
