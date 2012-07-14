@@ -1,5 +1,5 @@
 #include "graph-gtk-pad.h"
-
+#include "graph-gtk-connection.h"
 
 static void graph_gtk_pad_dispose (GObject *object);
 static void graph_gtk_pad_finalize (GObject *object);
@@ -63,3 +63,69 @@ graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y)
   *y = self->rel_y+self->node->y;
 }
 
+gboolean
+graph_gtk_pad_is_connected_to(GraphGtkPad* self, GraphGtkPad* other)
+{
+  if((self->is_output && other->is_output) || (!self->is_output && !other->is_output))
+    return FALSE;
+
+  GSList* list;
+  for(list = self->connections; list != NULL; list++)
+    {
+      GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
+      GraphGtkPad *pad;
+      
+      if(self->is_output)
+	pad = connection->sink;
+      else
+	pad = connection->source;
+
+      if(pad == other)
+	return TRUE;
+    }
+
+  return FALSE;
+}
+
+void
+graph_gtk_pad_connect_to(GraphGtkPad* source, GraphGtkPad* sink)
+{
+  if(!source->is_output || sink->is_output)
+    {
+      g_warning("graph_gtk_pad_connect_to(): can only connect from an output pad to an input pad\n");
+      return;
+    }
+
+  if(!graph_gtk_pad_is_connected_to(source, sink))
+    {
+      GraphGtkConnection *connection = graph_gtk_connection_new(source, sink);
+      source->connections = g_slist_append(source->connections, connection);
+
+      graph_gtk_pad_disconnect(sink);
+      sink->connections = g_slist_append(sink->connections, connection);
+    }
+}
+
+//Remove all connections from this pad
+void
+graph_gtk_pad_disconnect(GraphGtkPad* self)
+{
+  GSList* list;
+  for(list = self->connections; list != NULL; list++)
+    {
+      GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
+      GraphGtkPad *other;
+      
+      if(self->is_output)
+	other = connection->sink;
+      else
+	other = connection->source;
+
+      other->connections = g_slist_remove(other->connections, connection);
+
+      g_object_unref(connection);
+    }
+
+  g_slist_free(list);
+  self->connections = NULL;
+}

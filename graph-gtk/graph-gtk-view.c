@@ -126,11 +126,12 @@ graph_gtk_view_clear(GraphGtkView* self)
       g_object_unref(G_OBJECT(list->data));
     }
 
+  g_slist_free(self->nodes);
   self->nodes = NULL;
 }
 
 GSList*
 graph_gtk_view_get_nodes(GraphGtkView* self)
 {
-  return self->nodes; 
+  return g_slist_copy(self->nodes); 
 }

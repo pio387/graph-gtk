@@ -27,6 +27,8 @@ G_BEGIN_DECLS
                                GRAPH_TYPE_GTK_CONNECTION,               \
                                GraphGtkConnectionClass))
 
+typedef GraphGtkPad;
+
 typedef struct _GraphGtkConnection      GraphGtkConnection;
 typedef struct _GraphGtkConnectionClass GraphGtkConnectionClass;
 
@@ -44,6 +46,8 @@ struct _GraphGtkConnection
 };
 
 GType graph_gtk_connection_get_type (void) G_GNUC_CONST;
+
+GraphGtkConnection* graph_gtk_connection_new(GraphGtkPad* source, GraphGtkPad* sink);
 void graph_gtk_connection_render(GraphGtkConnection* self, cairo_t* cairo);
 
 G_END_DECLS

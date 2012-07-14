@@ -1,4 +1,5 @@
 #include "graph-gtk-node.h"
+#include "graph-gtk-pad.h"
 
 static void graph_gtk_node_dispose (GObject *object);
 static void graph_gtk_node_finalize (GObject *object);
@@ -42,7 +43,7 @@ graph_gtk_node_finalize (GObject *object)
 static void
 graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cairo)
 {
-  
+  //Draw the node with cairo
 }
 
 void
@@ -51,4 +52,54 @@ graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo)
   g_return_if_fail(IS_GRAPH_GTK_NODE(self));
 
   GRAPH_GTK_NODE_GET_CLASS(self)->render_node(self, cairo);
+}
+
+GSList*
+graph_gtk_node_get_pads(GraphGtkNode* self)
+{
+  return g_slist_concat(self->input_pads, self->output_pads);
+}
+
+GSList* 
+graph_gtk_node_get_input_pads(GraphGtkNode* self)
+{
+  return g_slist_copy(self->input_pads);
+}
+
+GSList* 
+graph_gtk_node_get_output_pads(GraphGtkNode* self)
+{
+  return g_slist_copy(self->output_pads);
+}
+
+void
+graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad)
+{
+  GraphGtkPad *source_pad = NULL, *sink_pad = NULL;
+
+  GSList* list;
+  for(list = graph_gtk_node_get_pads(source); list != NULL; list++)
+    {
+      GraphGtkPad *pad = (GraphGtkPad*)list->data;
+      if(g_strcmp0(pad->name, output_pad))
+	{
+	  source_pad = pad;
+	  break;
+	}
+    }
+
+  for(list = graph_gtk_node_get_pads(sink); list != NULL; list++)
+    {
+      GraphGtkPad *pad = (GraphGtkPad*)list->data;
+      if(g_strcmp0(pad->name, input_pad))
+	{
+	  sink_pad = pad;
+	  break;
+	}
+    }
+
+  if(!source_pad || !sink_pad)
+    return;
+
+  graph_gtk_pad_connect_to(source_pad, sink_pad);
 }

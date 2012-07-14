@@ -54,3 +54,12 @@ graph_gtk_connection_render(GraphGtkConnection* self, cairo_t* cairo)
   GRAPH_GTK_CONNECTION_GET_CLASS(self)->render_connection(self, cairo);
 }
 
+GraphGtkConnection*
+graph_gtk_connection_new(GraphGtkPad* source, GraphGtkPad* sink)
+{
+  GraphGtkConnection* connection = GRAPH_GTK_CONNECTION(g_object_new(GRAPH_TYPE_GTK_CONNECTION, NULL));
+  connection->source = source;
+  connection->sink = sink;
+
+  return connection;
+}

@@ -42,17 +42,22 @@ struct _GraphGtkPad
 {
   GObject parent;
 
+  const gchar* name;
+
   GraphGtkNode* node; //node to which this pad is attached
 
   gint rel_x, rel_y; //coordinates of the center this pad relative to the containing node's coordinates. These values are set by the containing node when the node is constructed and if/when the node is resized. It is up to the containing node to made sure these coordinates are up to date
-  gboolean is_output; //by default (*only* option right now), input pads can only have one connection. New connections replace old connections
+  gboolean is_output; //input pads can only have one connection. New connections replace old connections
   GSList* connections; //each GraphGtkConnection* is referenced twice, once each by the GraphGtkPads at either end
 };
 
 GType graph_gtk_pad_get_type (void) G_GNUC_CONST;
 
-void	graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y);
-void	graph_gtk_pad_render(GraphGtkPad* self, cairo_t* cairo);
+void		graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y);
+void		graph_gtk_pad_render(GraphGtkPad* self, cairo_t* cairo);
+gboolean	graph_gtk_pad_is_connected_to(GraphGtkPad* self, GraphGtkPad* other);
+void		graph_gtk_pad_connect_to(GraphGtkPad* source, GraphGtkPad* sink);
+void		graph_gtk_pad_disconnect(GraphGtkPad* self);
 
 G_END_DECLS
 
