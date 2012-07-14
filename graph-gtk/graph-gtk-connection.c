@@ -41,9 +41,20 @@ graph_gtk_connection_finalize (GObject *object)
 }
 
 static void 
-graph_gtk_connection_default_render(GraphGtkConnection* self, cairo_t* cairo)
+graph_gtk_connection_default_render(GraphGtkConnection* self, cairo_t* cr)
 {
-  
+  int from_x, from_y, to_x, to_y;
+  graph_gtk_pad_get_position(self->source, &from_x, &from_y);
+  graph_gtk_pad_get_position(self->sink, &to_x, &to_y);
+
+
+  cairo_set_line_width(cr, 1);
+  cairo_set_source_rgb(cr, 0, 0, 0);
+
+  cairo_move_to(cr, from_x, from_y);
+  cairo_line_to(cr, to_x, to_y);
+
+  cairo_stroke(cr);
 }
 
 void 

@@ -167,6 +167,16 @@
        y1="132.45782"
        x2="384.09561"
        y2="122.20747" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3895"
+       id="linearGradient5333"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-25.844408,87.38961)"
+       x1="276.36536"
+       y1="144.14104"
+       x2="276.36536"
+       y2="133.62473" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -176,8 +186,8 @@
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="250.31833"
-     inkscape:cy="950.40622"
+     inkscape:cx="290.95932"
+     inkscape:cy="901.46167"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -213,7 +223,7 @@
        transform="matrix(1.2680114,0,0,1.2680114,-40.921559,42.713237)" />
     <path
        style="fill:#505050;fill-opacity:1;stroke:none"
-       d="m 306.0402,144.42372 107.86324,0 c 2.48761,0 4.49027,2.15109 4.49027,4.82306 l 0,11.50946 -116.84379,0 0,-11.50946 c 0,-2.67197 2.00267,-4.82306 4.49028,-4.82306 z"
+       d="m 305.76821,144.90985 108.76078,0 c 2.50831,0 4.52763,2.08707 4.52763,4.67951 l 0,11.16688 -117.81606,0 0,-11.16688 c 0,-2.59244 2.01933,-4.67951 4.52765,-4.67951 z"
        id="rect3770"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="sssccss" />
@@ -221,7 +231,7 @@
        sodipodi:nodetypes="sssccss"
        inkscape:connector-curvature="0"
        id="path3789"
-       d="m 413.90343,223.03928 -107.86324,0 c -2.48761,0 -4.49027,-2.15108 -4.49027,-4.82304 l 0,-58.10167 116.84379,0 0,58.10167 c 0,2.67196 -2.00267,4.82304 -4.49028,4.82304 z"
+       d="m 414.35559,223.03928 -108.67918,0 c -2.50643,0 -4.52424,-2.15108 -4.52424,-4.82304 l 0,-58.10167 117.72768,0 0,58.10167 c 0,2.67196 -2.01783,4.82304 -4.52426,4.82304 z"
        style="fill:#2c2c2c;fill-opacity:1;stroke:none" />
     <rect
        style="fill:none;stroke:url(#linearGradient3761);stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"

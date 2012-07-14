@@ -103,3 +103,10 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 
   graph_gtk_pad_connect_to(source_pad, sink_pad);
 }
+
+void
+graph_gtk_node_recalculate_size(GraphGtkNode* source)
+{
+  //Recalculate size of the node based on number of pads and pad-name lengths
+  //...
+}
