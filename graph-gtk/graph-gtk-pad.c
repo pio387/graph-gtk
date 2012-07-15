@@ -46,6 +46,18 @@ graph_gtk_pad_finalize (GObject *object)
 static void
 graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
 {
+  if(self->is_output)
+    {
+      GSList *list;
+      for(list = self->connections; list != NULL; list = list->next)
+	{
+	  GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
+	  graph_gtk_connection_render(connection, cr);
+	}
+    }
+  
+  gboolean connected = (g_slist_length(self->connections) > 0);
+
   int x, y;
   graph_gtk_pad_get_position(self, &x, &y);
   if(self->is_output)
@@ -55,7 +67,10 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_line_to(cr, x-5, y+5);
       cairo_line_to(cr, x+5, y+5);
       cairo_close_path(cr);
-      cairo_set_source_rgb(cr, 64.0/256.0, 64.0/256.0, 64.0/256.0);
+      if(connected)
+	cairo_set_source_rgb(cr, 140.0/256.0, 132.0/256.0, 27.0/256.0);
+      else
+	cairo_set_source_rgb(cr, 64.0/256.0, 64.0/256.0, 64.0/256.0);
       cairo_fill(cr);
 
       cairo_move_to(cr, x+5, y-5);
@@ -84,7 +99,10 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_line_to(cr, x-5, y+5);
       cairo_line_to(cr, x+5, y+5);
       cairo_close_path(cr);
-      cairo_set_source_rgb(cr, 64.0/256.0, 64.0/256.0, 64.0/256.0);
+      if(connected)
+	cairo_set_source_rgb(cr, 140.0/256.0, 132.0/256.0, 27.0/256.0);
+      else
+	cairo_set_source_rgb(cr, 64.0/256.0, 64.0/256.0, 64.0/256.0);
       cairo_fill(cr);
 
       cairo_move_to(cr, x-5, y-5);
@@ -107,15 +125,6 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_show_text(cr, self->name);
     }
 
-  if(self->is_output)
-    {
-      GSList *list;
-      for(list = self->connections; list != NULL; list = list->next)
-	{
-	  GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
-	  graph_gtk_connection_render(connection, cr);
-	}
-    }
 }
 
 GraphGtkPad*
