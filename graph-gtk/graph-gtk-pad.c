@@ -1,4 +1,5 @@
 #include "graph-gtk-pad.h"
+#include "graph-gtk-node.h"
 #include "graph-gtk-connection.h"
 
 static void graph_gtk_pad_dispose (GObject *object);
@@ -105,6 +106,16 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_set_source_rgb(cr, 182.0/256.0, 182.0/256.0, 182.0/256.0);
       cairo_show_text(cr, self->name);
     }
+
+  if(self->is_output)
+    {
+      GSList *list;
+      for(list = self->connections; list != NULL; list = list->next)
+	{
+	  GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
+	  graph_gtk_connection_render(connection, cr);
+	}
+    }
 }
 
 GraphGtkPad*
@@ -140,7 +151,7 @@ graph_gtk_pad_is_connected_to(GraphGtkPad* self, GraphGtkPad* other)
     return FALSE;
 
   GSList* list;
-  for(list = self->connections; list != NULL; list++)
+  for(list = self->connections; list != NULL; list = list->next)
     {
       GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
       GraphGtkPad *pad;
@@ -169,6 +180,7 @@ graph_gtk_pad_connect_to(GraphGtkPad* source, GraphGtkPad* sink)
   if(!graph_gtk_pad_is_connected_to(source, sink))
     {
       GraphGtkConnection *connection = graph_gtk_connection_new(source, sink);
+
       source->connections = g_slist_append(source->connections, connection);
 
       graph_gtk_pad_disconnect(sink);
@@ -181,7 +193,7 @@ void
 graph_gtk_pad_disconnect(GraphGtkPad* self)
 {
   GSList* list;
-  for(list = self->connections; list != NULL; list++)
+  for(list = self->connections; list != NULL; list = list->next)
     {
       GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
       GraphGtkPad *other;
@@ -196,6 +208,6 @@ graph_gtk_pad_disconnect(GraphGtkPad* self)
       g_object_unref(connection);
     }
 
-  g_slist_free(list);
+  g_slist_free(self->connections);
   self->connections = NULL;
 }

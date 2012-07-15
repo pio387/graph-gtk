@@ -1,4 +1,6 @@
 #include "graph-gtk-view.h"
+#include "graph-gtk-node.h"
+#include "graph-gtk-pad.h"
 
 #define REDRAW() gtk_widget_queue_draw(GTK_WIDGET(self))
 
@@ -101,7 +103,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
   for(list = view->nodes; list != NULL; list = list->next)
     {
       GraphGtkNode* node = (GraphGtkNode*)list->data;
-      graph_gtk_node_render(node, cr);
+      graph_gtk_node_render(node, cr, 0, 0);
     }
 
   return FALSE;
@@ -130,7 +132,15 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
-	  if(graph_gtk_node_is_within(node, event->x, event->y))
+	  GraphGtkPad *pad;
+
+	  if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
+	    {
+	      g_print("Connecting from pad: %s\n", pad->name);
+	      self->is_mouse_connecting = TRUE;
+	      self->pad_connecting_from = pad;
+	    }
+	  else if(graph_gtk_node_is_within(node, event->x, event->y))
 	    {
 	      node->is_selected = TRUE;
 	      self->selected_nodes = g_slist_append(self->selected_nodes, node);
@@ -166,6 +176,26 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 	    {
 	      node->x += event->x-self->drag_begin_x;
 	      node->y += event->y-self->drag_begin_y;
+	    }
+	}
+    }
+  else if(self->is_mouse_connecting)
+    {
+      GSList *nodes;
+      for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
+	  GraphGtkPad *pad;
+
+	  if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
+	    {
+	      REDRAW();
+	      g_print("Connecting to pad: %s\n", pad->name);
+	      self->is_mouse_connecting = FALSE;
+	      if(self->pad_connecting_from->is_output)
+		graph_gtk_pad_connect_to(self->pad_connecting_from, pad);
+	      else
+		graph_gtk_pad_connect_to(pad, self->pad_connecting_from);
 	    }
 	}
     }

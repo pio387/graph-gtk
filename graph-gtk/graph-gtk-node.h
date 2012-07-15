@@ -4,6 +4,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "graph-gtk-pad.h"
+
 G_BEGIN_DECLS
 
 #define GRAPH_TYPE_GTK_NODE                                             \
@@ -33,7 +35,7 @@ typedef struct _GraphGtkNodeClass GraphGtkNodeClass;
 struct _GraphGtkNodeClass
 {
   GObjectClass parent_class;
-  void (*render_node) (GraphGtkNode* self, cairo_t* cairo);
+  void (*render_node) (GraphGtkNode* self, cairo_t* cairo, int x, int y);
 };
 
 struct _GraphGtkNode
@@ -57,7 +59,7 @@ GType graph_gtk_node_get_type (void) G_GNUC_CONST;
 
 GraphGtkNode*	graph_gtk_node_new();
 void		graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name);
-void		graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo);
+void		graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo, int x, int y);
 void		graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output);
 GSList*		graph_gtk_node_get_pads(GraphGtkNode* self);
 GSList*		graph_gtk_node_get_input_pads(GraphGtkNode* self);
@@ -65,6 +67,7 @@ GSList*		graph_gtk_node_get_output_pads(GraphGtkNode* self);
 void		graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad);
 void		graph_gtk_node_recalculate_size(GraphGtkNode* self);
 gboolean	graph_gtk_node_is_within(GraphGtkNode* self, int x, int y);	//check whether this position is within the node
+GraphGtkPad*	graph_gtk_node_is_on_pad(GraphGtkNode* self, int x, int y);	//check whether this position is within a pad on this node
 
 G_END_DECLS
 

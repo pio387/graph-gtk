@@ -27,7 +27,8 @@ G_BEGIN_DECLS
                                GRAPH_TYPE_GTK_CONNECTION,               \
                                GraphGtkConnectionClass))
 
-typedef GraphGtkPad;
+struct _GraphGtkPad;
+typedef struct _GraphGtkPad GraphGtkPad;
 
 typedef struct _GraphGtkConnection      GraphGtkConnection;
 typedef struct _GraphGtkConnectionClass GraphGtkConnectionClass;

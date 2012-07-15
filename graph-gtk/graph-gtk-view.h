@@ -2,7 +2,6 @@
 #define __GRAPH_GTK_VIEW_H__
 
 #include <gtk/gtk.h>
-#include "graph-gtk-node.h"
 
 G_BEGIN_DECLS
 
@@ -27,6 +26,12 @@ G_BEGIN_DECLS
                                GRAPH_TYPE_GTK_VIEW,                     \
                                GraphGtkViewClass))
 
+struct _GraphGtkPad;
+typedef struct _GraphGtkPad GraphGtkPad;
+
+struct _GraphGtkNode;
+typedef struct _GraphGtkNode GraphGtkNode;
+
 typedef struct _GraphGtkView      GraphGtkView;
 typedef struct _GraphGtkViewClass GraphGtkViewClass;
 
@@ -43,6 +48,9 @@ struct _GraphGtkView
 
   /* private state management */
   GSList* selected_nodes; //list of currently selected nodes
+
+  gboolean is_mouse_connecting;
+  GraphGtkPad* pad_connecting_from;
 
   gboolean is_mouse_dragging; //mouse was pressed on a node and has not yet been released
   gint drag_begin_x, drag_begin_y; //mouse coordinates in screen space when dragging began
