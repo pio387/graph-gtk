@@ -50,6 +50,7 @@ struct _GraphGtkNode
   /* Rendering state */
   gint x, y; //coordinate position
   gint width, height;
+  gboolean is_selected; //set and unset by the GraphGtkView
 };
 
 GType graph_gtk_node_get_type (void) G_GNUC_CONST;
@@ -62,7 +63,8 @@ GSList*		graph_gtk_node_get_pads(GraphGtkNode* self);
 GSList*		graph_gtk_node_get_input_pads(GraphGtkNode* self);
 GSList*		graph_gtk_node_get_output_pads(GraphGtkNode* self);
 void		graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad);
-void		graph_gtk_node_recalculate_size(GraphGtkNode* source);
+void		graph_gtk_node_recalculate_size(GraphGtkNode* self);
+gboolean	graph_gtk_node_is_within(GraphGtkNode* self, int x, int y);	//check whether this position is within the node
 
 G_END_DECLS
 

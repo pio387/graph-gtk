@@ -72,7 +72,7 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_text_extents_t extents;
       cairo_text_extents(cr, self->name, &extents);
 
-      cairo_move_to(cr, x-8-extents.width, y-(extents.y_bearing/2));
+      cairo_move_to(cr, x-10-extents.width, y-(extents.y_bearing/2));
       cairo_set_source_rgb(cr, 182.0/256.0, 182.0/256.0, 182.0/256.0);
       cairo_show_text(cr, self->name);
     }
@@ -101,7 +101,7 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_text_extents_t extents;
       cairo_text_extents(cr, self->name, &extents);
 
-      cairo_move_to(cr, x+8, y-(extents.y_bearing/2));
+      cairo_move_to(cr, x+10, y-(extents.y_bearing/2));
       cairo_set_source_rgb(cr, 182.0/256.0, 182.0/256.0, 182.0/256.0);
       cairo_show_text(cr, self->name);
     }

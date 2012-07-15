@@ -119,38 +119,41 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
   //Draw the node with cairo
   int corner_radius = 5;
 
-  //shadow
-  cairo_surface_t *shadow = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, self->width+50, self->height+50);
-  cairo_t *shadow_context = cairo_create(shadow);
+  if(!self->is_selected)
+    {
+      //shadow
+      cairo_surface_t *shadow = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, self->width+50, self->height+50);
+      cairo_t *shadow_context = cairo_create(shadow);
 
-  cairo_save (shadow_context);
-  cairo_set_source_rgba (shadow_context, 0, 0, 0, 0);
-  cairo_set_operator (shadow_context, CAIRO_OPERATOR_SOURCE);
-  cairo_paint (shadow_context);
-  cairo_restore (shadow_context);
+      cairo_save (shadow_context);
+      cairo_set_source_rgba (shadow_context, 0, 0, 0, 0);
+      cairo_set_operator (shadow_context, CAIRO_OPERATOR_SOURCE);
+      cairo_paint (shadow_context);
+      cairo_restore (shadow_context);
 
-  cairo_line_to(shadow_context, 25+self->width-corner_radius, 25);
-  cairo_arc(shadow_context, 25+self->width-corner_radius, 25+corner_radius, corner_radius, -M_PI/2.0, 0.0);
-  cairo_line_to(shadow_context, 25+self->width, 25+self->height-corner_radius);
-  cairo_arc(shadow_context, 25+self->width-corner_radius, 25+self->height-corner_radius, corner_radius, 0.0, M_PI/2.0);
-  cairo_line_to(shadow_context, 25+corner_radius, 25+self->height);
-  cairo_arc(shadow_context, 25+corner_radius, 25+self->height-corner_radius, corner_radius, M_PI/2.0, M_PI);
-  cairo_line_to(shadow_context, 25, 25+corner_radius);
-  cairo_arc(shadow_context, 25+corner_radius, 25+corner_radius, corner_radius, M_PI, -M_PI/2.0);
-  cairo_close_path(shadow_context); //probably unecessary
-  cairo_set_source_rgba(shadow_context, 0, 0, 0, 0.7);
-  cairo_fill(shadow_context);
+      cairo_line_to(shadow_context, 25+self->width-corner_radius, 25);
+      cairo_arc(shadow_context, 25+self->width-corner_radius, 25+corner_radius, corner_radius, -M_PI/2.0, 0.0);
+      cairo_line_to(shadow_context, 25+self->width, 25+self->height-corner_radius);
+      cairo_arc(shadow_context, 25+self->width-corner_radius, 25+self->height-corner_radius, corner_radius, 0.0, M_PI/2.0);
+      cairo_line_to(shadow_context, 25+corner_radius, 25+self->height);
+      cairo_arc(shadow_context, 25+corner_radius, 25+self->height-corner_radius, corner_radius, M_PI/2.0, M_PI);
+      cairo_line_to(shadow_context, 25, 25+corner_radius);
+      cairo_arc(shadow_context, 25+corner_radius, 25+corner_radius, corner_radius, M_PI, -M_PI/2.0);
+      cairo_close_path(shadow_context); //probably unecessary
+      cairo_set_source_rgba(shadow_context, 0, 0, 0, 0.7);
+      cairo_fill(shadow_context);
 
-  cairo_surface_flush(shadow);
-  cairo_image_surface_blur(shadow, 2);
+      cairo_surface_flush(shadow);
+      cairo_image_surface_blur(shadow, 2);
 
-  int offset = 3.5;
-  cairo_set_source_surface(cr, shadow, self->x-25+offset, self->y-25+offset);
-  //cairo_rectangle(cr, self->x-10, self->y-10, self->x+20, self->y+20);
-  cairo_paint(cr);
+      int offset = 3.5;
+      cairo_set_source_surface(cr, shadow, self->x-25+offset, self->y-25+offset);
+      //cairo_rectangle(cr, self->x-10, self->y-10, self->x+20, self->y+20);
+      cairo_paint(cr);
 
-  cairo_surface_finish(shadow);
-  cairo_destroy(shadow_context);
+      cairo_surface_finish(shadow);
+      cairo_destroy(shadow_context);
+    }
 
   cairo_move_to(cr, self->x+corner_radius, self->y);
   cairo_line_to(cr, self->x+self->width-corner_radius, self->y);
@@ -211,11 +214,20 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
   cairo_close_path(cr); //probably unecessary
 
   cairo_pattern_t *gradient = cairo_pattern_create_linear(0, -15, 0, 25);
-  cairo_pattern_add_color_stop_rgb(gradient, 0, 210.0/256.0, 210.0/256.0, 210.0/256.0);
-  cairo_pattern_add_color_stop_rgb(gradient, 1.0, 132.0/256.0, 132.0/256.0, 132.0/256.0);
+
+  if(!self->is_selected)
+    {
+      cairo_pattern_add_color_stop_rgb(gradient, 0, 210.0/256.0, 210.0/256.0, 210.0/256.0);
+      cairo_pattern_add_color_stop_rgb(gradient, 1.0, 132.0/256.0, 132.0/256.0, 132.0/256.0);
+    }
+  else
+    {
+      cairo_pattern_add_color_stop_rgb(gradient, 0, 165.0/256.0, 255.0/256.0, 184.0/256.0);
+      cairo_pattern_add_color_stop_rgb(gradient, 1.0, 9.0/256.0, 255.0/256.0, 48.0/256.0);
+    }
 
   cairo_set_source(cr, gradient);
-  cairo_set_line_width(cr, 1.0);
+  cairo_set_line_width(cr, 0.5);
   cairo_stroke(cr);
 
   cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
@@ -364,4 +376,16 @@ graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean outpu
     }
 
   graph_gtk_node_recalculate_size(self);
+}
+
+gboolean
+graph_gtk_node_is_within(GraphGtkNode* self, int x, int y)
+{
+  if(x > self->x && x < self->x+self->width &&
+     y > self->y && y < self->y+self->height)
+    {
+      return TRUE;
+    }
+
+  return FALSE;
 }

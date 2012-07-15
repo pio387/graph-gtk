@@ -1,5 +1,6 @@
 #include "graph-gtk-view.h"
 
+#define REDRAW() gtk_widget_queue_draw(GTK_WIDGET(self))
 
 static void graph_gtk_view_dispose (GObject *object);
 static void graph_gtk_view_finalize (GObject *object);
@@ -9,6 +10,10 @@ static gboolean graph_gtk_view_draw(GtkWidget* self, cairo_t* cairo);
 #if GTK_MAJOR_VERSION == (2)
 static gboolean graph_gtk_view_expose(GtkWidget* self, GdkEventExpose* event);
 #endif
+
+static gboolean graph_gtk_view_button_pressed(GtkWidget* self, GdkEventButton* event);
+static gboolean graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event);
+static gboolean graph_gtk_view_mouse_moved(GtkWidget* widget, GdkEventMotion* event);
 
 G_DEFINE_TYPE (GraphGtkView, graph_gtk_view, GTK_TYPE_DRAWING_AREA);
 
@@ -28,11 +33,22 @@ graph_gtk_view_class_init (GraphGtkViewClass *klass)
   widget_class->expose_event = graph_gtk_view_expose;
 #endif
 
+  widget_class->button_press_event = graph_gtk_view_button_pressed;
+  widget_class->button_release_event = graph_gtk_view_button_released;
+  widget_class->motion_notify_event = graph_gtk_view_mouse_moved;
 }
 
 static void
 graph_gtk_view_init (GraphGtkView *self)
 {
+  gtk_widget_add_events (GTK_WIDGET(self),
+			 GDK_POINTER_MOTION_MASK |
+			 GDK_BUTTON_PRESS_MASK   |
+			 GDK_BUTTON_RELEASE_MASK |
+			 GDK_KEY_PRESS_MASK |
+			 GDK_KEY_RELEASE_MASK);
+
+  gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
 }
 
 static void
@@ -91,6 +107,80 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
   return FALSE;
 }
 
+static gboolean
+graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
+{
+  GraphGtkView *self = GRAPH_GTK_VIEW(widget);
+
+  if(event->button == 1)
+    {
+      REDRAW();
+
+      //TODO: shift click to select multiple nodes
+      GSList* nodes;
+      for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = nodes->data;
+	  node->is_selected = FALSE;
+	}
+
+      g_slist_free(self->selected_nodes);
+      self->selected_nodes = NULL;
+
+      for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
+	  if(graph_gtk_node_is_within(node, event->x, event->y))
+	    {
+	      node->is_selected = TRUE;
+	      self->selected_nodes = g_slist_append(self->selected_nodes, node);
+
+	      self->is_mouse_dragging = TRUE;
+	      self->drag_begin_x = event->x;
+	      self->drag_begin_y = event->y;
+
+	      break;
+	    }
+	}
+    }
+
+  return FALSE;
+}
+
+static gboolean
+graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
+{
+  GraphGtkView *self = GRAPH_GTK_VIEW(widget);
+
+  if(self->is_mouse_dragging)
+    {
+      REDRAW();
+
+      self->is_mouse_dragging = FALSE;
+
+      GSList* nodes;
+      for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = nodes->data;
+	  if(node->is_selected)
+	    {
+	      node->x += event->x-self->drag_begin_x;
+	      node->y += event->y-self->drag_begin_y;
+	    }
+	}
+    }
+
+  return FALSE;
+}
+
+static gboolean
+graph_gtk_view_mouse_moved(GtkWidget* widget, GdkEventMotion* event)
+{
+  GraphGtkView *self = GRAPH_GTK_VIEW(widget);
+
+  return FALSE;
+}
+
 GtkWidget*
 graph_gtk_view_new()
 {
@@ -104,6 +194,8 @@ graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node)
     {
       g_object_ref_sink(G_OBJECT(node)); //is sink the right thing to do here?
       self->nodes = g_slist_append(self->nodes, node);
+
+      REDRAW();
     }
 }
 
@@ -114,6 +206,8 @@ graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
     {
       self->nodes = g_slist_remove(self->nodes, node);
       g_object_unref(G_OBJECT(node));
+
+      REDRAW();
     }
 }
 
@@ -128,6 +222,8 @@ graph_gtk_view_clear(GraphGtkView* self)
 
   g_slist_free(self->nodes);
   self->nodes = NULL;
+
+  REDRAW();
 }
 
 GSList*
