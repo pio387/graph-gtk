@@ -52,7 +52,16 @@ graph_gtk_connection_default_render(GraphGtkConnection* self, cairo_t* cr)
   cairo_set_source_rgb(cr, 0, 0, 0);
 
   cairo_move_to(cr, from_x, from_y);
-  cairo_line_to(cr, to_x, to_y);
+
+  if(to_x - from_x > 200)
+    cairo_curve_to(cr, (from_x+to_x)/2, from_y,
+		   (from_x+to_x)/2, to_y,
+		   to_x, to_y);
+  else
+    cairo_curve_to(cr, from_x+100, from_y,
+		   to_x-100, to_y,
+		   to_x, to_y);
+	  //  cairo_line_to(cr, to_x, to_y);
 
   cairo_stroke(cr);
 }

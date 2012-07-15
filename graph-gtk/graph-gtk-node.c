@@ -353,7 +353,7 @@ graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name)
 void
 graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output)
 {
-  if(output) 
+  if(output)
     {
       GSList* list;
       for(list = self->output_pads; list != NULL && g_strcmp0(((GraphGtkPad*)list->data)->name, pad_name); list = list->next);
