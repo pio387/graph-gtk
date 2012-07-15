@@ -77,7 +77,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
     user set a cairo surface property on the GeglGtkView. For now just render a solid grey background
   */
 
-  cairo_set_source_rgb(cr, 0.82, 0.82, 0.82);
+  cairo_set_source_rgb(cr, 124.0/256.0, 124.0/256.0, 124.0/256.0);
   cairo_paint(cr);
 
   //render the graph_gtk_view

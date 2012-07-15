@@ -114,16 +114,18 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
 	  graph_gtk_node_set_name(node, gtk_entry_get_text(GTK_ENTRY(name_entry)));
 
 	  GList* list;
-	  for(list = gtk_container_get_children(GTK_CONTAINER(inputs)); list != NULL; list++)
+	  for(list = gtk_container_get_children(GTK_CONTAINER(inputs)); list != NULL; list = list->next)
 	    {
 	      GtkWidget *entry = (GtkWidget*)list->data;
-	      graph_gtk_node_add_pad(node, gtk_entry_get_text(GTK_ENTRY(entry)), FALSE);
+	      if(GTK_IS_ENTRY(entry))
+		graph_gtk_node_add_pad(node, gtk_entry_get_text(GTK_ENTRY(entry)), FALSE);
 	    }
 
-	  for(list = gtk_container_get_children(GTK_CONTAINER(outputs)); list != NULL; list++)
+	  for(list = gtk_container_get_children(GTK_CONTAINER(outputs)); list != NULL; list = list->next)
 	    {
 	      GtkWidget *entry = (GtkWidget*)list->data;
-	      graph_gtk_node_add_pad(node, gtk_entry_get_text(GTK_ENTRY(entry)), TRUE);
+	      if(GTK_IS_ENTRY(entry))
+		graph_gtk_node_add_pad(node, gtk_entry_get_text(GTK_ENTRY(entry)), TRUE);
 	    }
 
 	  GraphGtkView *graph = (GraphGtkView*)data;

@@ -21,6 +21,8 @@ graph_gtk_pad_class_init (GraphGtkPadClass *klass)
 static void
 graph_gtk_pad_init (GraphGtkPad *self)
 {
+  self->rel_x = 0;
+  self->rel_y = 0;
 }
 
 static void
@@ -41,16 +43,75 @@ graph_gtk_pad_finalize (GObject *object)
 }
 
 static void
-graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cairo)
+graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
 {
-  
+  int x, y;
+  graph_gtk_pad_get_position(self, &x, &y);
+  if(self->is_output)
+    {
+      cairo_move_to(cr, x+5, y-5);
+      cairo_line_to(cr, x-5, y-5);
+      cairo_line_to(cr, x-5, y+5);
+      cairo_line_to(cr, x+5, y+5);
+      cairo_close_path(cr);
+      cairo_set_source_rgb(cr, 64.0/256.0, 64.0/256.0, 64.0/256.0);
+      cairo_fill(cr);
+
+      cairo_move_to(cr, x+5, y-5);
+      cairo_line_to(cr, x-5, y-5);
+      cairo_line_to(cr, x-5, y+5);
+      cairo_line_to(cr, x+5, y+5);
+      
+      cairo_set_line_width(cr, 0.7);
+      cairo_set_source_rgb(cr, 132.0/256.0, 132.0/256.0, 132.0/256.0);
+      cairo_stroke(cr);
+
+      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size(cr, 13);
+      
+      cairo_text_extents_t extents;
+      cairo_text_extents(cr, self->name, &extents);
+
+      cairo_move_to(cr, x-8-extents.width, y-(extents.y_bearing/2));
+      cairo_set_source_rgb(cr, 182.0/256.0, 182.0/256.0, 182.0/256.0);
+      cairo_show_text(cr, self->name);
+    }
+  else //is input
+    {
+      cairo_move_to(cr, x+5, y-5);
+      cairo_line_to(cr, x-5, y-5);
+      cairo_line_to(cr, x-5, y+5);
+      cairo_line_to(cr, x+5, y+5);
+      cairo_close_path(cr);
+      cairo_set_source_rgb(cr, 64.0/256.0, 64.0/256.0, 64.0/256.0);
+      cairo_fill(cr);
+
+      cairo_move_to(cr, x-5, y-5);
+      cairo_line_to(cr, x+5, y-5);
+      cairo_line_to(cr, x+5, y+5);
+      cairo_line_to(cr, x-5, y+5);
+      
+      cairo_set_line_width(cr, 0.7);
+      cairo_set_source_rgb(cr, 132.0/256.0, 132.0/256.0, 132.0/256.0);
+      cairo_stroke(cr);
+
+      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size(cr, 13);
+      
+      cairo_text_extents_t extents;
+      cairo_text_extents(cr, self->name, &extents);
+
+      cairo_move_to(cr, x+8, y-(extents.y_bearing/2));
+      cairo_set_source_rgb(cr, 182.0/256.0, 182.0/256.0, 182.0/256.0);
+      cairo_show_text(cr, self->name);
+    }
 }
 
 GraphGtkPad*
 graph_gtk_pad_new(const gchar* name, gboolean is_output)
 {
   GraphGtkPad *pad = GRAPH_GTK_PAD(g_object_new(GRAPH_TYPE_GTK_PAD, NULL));
-  pad->name = name;
+  pad->name = g_strdup(name);
   pad->is_output = is_output;
   return pad;
 }

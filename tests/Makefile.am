@@ -1,4 +1,4 @@
-AM_CFLAGS = $(GTK_CFLAGS) -I$(top_srcdir)/graph-gtk/
+AM_CFLAGS = $(GTK_CFLAGS) -I$(top_srcdir)/graph-gtk/ -g
 AM_LDFLAGS = $(top_srcdir)/graph-gtk/libgraph-gtk.la
 LIBS = $(GTK_LIBS) 
 

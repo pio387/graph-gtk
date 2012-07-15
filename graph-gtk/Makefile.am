@@ -1,4 +1,4 @@
-AM_CFLAGS = $(GTK_CFLAGS) 
+AM_CFLAGS = $(GTK_CFLAGS) -g
 LIBS = $(GTK_LIBS)
 
 lib_LTLIBRARIES = libgraph-gtk.la
