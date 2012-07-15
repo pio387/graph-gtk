@@ -1,6 +1,7 @@
 #include "graph-gtk-view.h"
 #include "graph-gtk-node.h"
 #include "graph-gtk-pad.h"
+#include "graph-gtk-connection.h"
 
 #define REDRAW() gtk_widget_queue_draw(GTK_WIDGET(self))
 
@@ -99,6 +100,35 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
   cairo_paint(cr);
 
   //render the graph_gtk_view
+  GSList* nodes;
+  for(nodes = view->nodes; nodes != NULL; nodes = nodes->next)
+    {
+      GraphGtkNode *node = (GraphGtkNode*)nodes->data;
+
+      GSList *pads;
+      for(pads = graph_gtk_node_get_input_pads(node); pads != NULL; pads = pads->next)
+	{
+	  GraphGtkPad *pad = (GraphGtkPad*)pads->data;
+	  GSList *connections;
+	  for(connections = pad->connections; connections != NULL; connections = connections->next)
+	    {
+	      GraphGtkConnection *connection = (GraphGtkConnection*)connections->data;
+	      graph_gtk_connection_render(connection, cr);
+	    }
+	}
+
+      for(pads = graph_gtk_node_get_output_pads(node); pads != NULL; pads = pads->next)
+	{
+	  GraphGtkPad *pad = (GraphGtkPad*)pads->data;
+	  GSList *connections;
+	  for(connections = pad->connections; connections != NULL; connections = connections->next)
+	    {
+	      GraphGtkConnection *connection = (GraphGtkConnection*)connections->data;
+	      graph_gtk_connection_render(connection, cr);
+	    }
+	}
+    }
+
   GSList* list;
   for(list = view->nodes; list != NULL; list = list->next)
     {
@@ -136,7 +166,6 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 
 	  if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
 	    {
-	      g_print("Connecting from pad: %s\n", pad->name);
 	      self->is_mouse_connecting = TRUE;
 	      self->pad_connecting_from = pad;
 	    }
