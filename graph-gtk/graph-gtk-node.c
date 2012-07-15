@@ -1,5 +1,73 @@
 #include "graph-gtk-node.h"
 #include "graph-gtk-pad.h"
+#include <stdlib.h>
+#include <memory.h>
+#include <stdio.h>
+
+void cairo_image_surface_blur( cairo_surface_t* surface, double radius )
+{
+    // Steve Hanov, 2009
+    // Released into the public domain.
+    
+    // get width, height
+    int width = cairo_image_surface_get_width( surface );
+    int height = cairo_image_surface_get_height( surface );
+    unsigned char* dst = (unsigned char*)malloc(width*height*4);
+    unsigned* precalc = 
+        (unsigned*)malloc(width*height*sizeof(unsigned));
+    unsigned char* src = cairo_image_surface_get_data( surface );
+    double mul=1.f/((radius*2)*(radius*2));
+    int channel;
+    
+    // The number of times to perform the averaging. According to wikipedia,
+    // three iterations is good enough to pass for a gaussian.
+    const MAX_ITERATIONS = 3; 
+    int iteration;
+
+    memcpy( dst, src, width*height*4 );
+
+    for ( iteration = 0; iteration < MAX_ITERATIONS; iteration++ ) {
+        for( channel = 0; channel < 4; channel++ ) {
+            int x,y;
+
+            // precomputation step.
+            unsigned char* pix = src;
+            unsigned* pre = precalc;
+
+            pix += channel;
+            for (y=0;y<height;y++) {
+                for (x=0;x<width;x++) {
+                    int tot=pix[0];
+                    if (x>0) tot+=pre[-1];
+                    if (y>0) tot+=pre[-width];
+                    if (x>0 && y>0) tot-=pre[-width-1];
+                    *pre++=tot;
+                    pix += 4;
+                }
+            }
+
+            // blur step.
+            pix = dst + (int)radius * width * 4 + (int)radius * 4 + channel;
+            for (y=radius;y<height-radius;y++) {
+                for (x=radius;x<width-radius;x++) {
+                    int l = x < radius ? 0 : x - radius;
+                    int t = y < radius ? 0 : y - radius;
+                    int r = x + radius >= width ? width - 1 : x + radius;
+                    int b = y + radius >= height ? height - 1 : y + radius;
+                    int tot = precalc[r+b*width] + precalc[l+t*width] - 
+                        precalc[l+b*width] - precalc[r+t*width];
+                    *pix=(unsigned char)(tot*mul);
+                    pix += 4;
+                }
+                pix += (int)radius * 2 * 4;
+            }
+        }
+        memcpy( src, dst, width*height*4 );
+    }
+
+    free( dst );
+    free( precalc );
+}
 
 static void graph_gtk_node_dispose (GObject *object);
 static void graph_gtk_node_finalize (GObject *object);
@@ -21,6 +89,10 @@ graph_gtk_node_class_init (GraphGtkNodeClass *klass)
 static void
 graph_gtk_node_init (GraphGtkNode *self)
 {
+  self->x = 10;
+  self->y = 10;
+  self->width = 118;
+  self->height = 80;
 }
 
 static void
@@ -41,9 +113,111 @@ graph_gtk_node_finalize (GObject *object)
 }
 
 static void
-graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cairo)
+graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
 {
+  double M_PI = 3.14159;
   //Draw the node with cairo
+  int corner_radius = 5;
+
+  //shadow
+  cairo_surface_t *shadow = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, self->width+50, self->height+50);
+  cairo_t *shadow_context = cairo_create(shadow);
+
+  cairo_save (shadow_context);
+  cairo_set_source_rgba (shadow_context, 0, 0, 0, 0);
+  cairo_set_operator (shadow_context, CAIRO_OPERATOR_SOURCE);
+  cairo_paint (shadow_context);
+  cairo_restore (shadow_context);
+
+  cairo_line_to(shadow_context, 25+self->width-corner_radius, 25);
+  cairo_arc(shadow_context, 25+self->width-corner_radius, 25+corner_radius, corner_radius, -M_PI/2.0, 0.0);
+  cairo_line_to(shadow_context, 25+self->width, 25+self->height-corner_radius);
+  cairo_arc(shadow_context, 25+self->width-corner_radius, 25+self->height-corner_radius, corner_radius, 0.0, M_PI/2.0);
+  cairo_line_to(shadow_context, 25+corner_radius, 25+self->height);
+  cairo_arc(shadow_context, 25+corner_radius, 25+self->height-corner_radius, corner_radius, M_PI/2.0, M_PI);
+  cairo_line_to(shadow_context, 25, 25+corner_radius);
+  cairo_arc(shadow_context, 25+corner_radius, 25+corner_radius, corner_radius, M_PI, -M_PI/2.0);
+  cairo_close_path(shadow_context); //probably unecessary
+  cairo_set_source_rgba(shadow_context, 0, 0, 0, 0.7);
+  cairo_fill(shadow_context);
+
+  cairo_surface_flush(shadow);
+  cairo_image_surface_blur(shadow, 2);
+
+  int offset = 3.5;
+  cairo_set_source_surface(cr, shadow, self->x-25+offset, self->y-25+offset);
+  //cairo_rectangle(cr, self->x-10, self->y-10, self->x+20, self->y+20);
+  cairo_paint(cr);
+
+  cairo_surface_finish(shadow);
+  cairo_destroy(shadow_context);
+
+  cairo_move_to(cr, self->x+corner_radius, self->y);
+  cairo_line_to(cr, self->x+self->width-corner_radius, self->y);
+  cairo_arc(cr, self->x+self->width-corner_radius, self->y+corner_radius,
+	    corner_radius,
+	    -M_PI/2.0, 0.0);
+  cairo_line_to(cr, self->x+self->width, self->y+15);
+  cairo_line_to(cr, self->x, self->y+15);
+  cairo_line_to(cr, self->x, self->y+corner_radius);
+  cairo_arc(cr, self->x+corner_radius, self->y+corner_radius, 
+	    corner_radius,
+	    M_PI, -M_PI/2.0);
+  cairo_set_source_rgb(cr, 80.0/256.0, 80.0/256.0, 80.0/256.0);
+  cairo_fill(cr);
+
+  cairo_move_to(cr, self->x+self->width, self->y+15);
+  cairo_line_to(cr, self->x+self->width, self->y+self->height-corner_radius);
+  cairo_arc(cr, self->x+self->width-corner_radius, self->y+self->height-corner_radius, corner_radius, 0.0, M_PI/2.0);
+  cairo_line_to(cr, self->x+corner_radius, self->y+self->height);
+  cairo_arc(cr, self->x+corner_radius, self->y+self->height-corner_radius,
+	    corner_radius,
+	    M_PI/2.0, M_PI);
+  cairo_line_to(cr, self->x, self->y+15);
+  cairo_close_path(cr);
+  cairo_set_source_rgb(cr, 44.0/256.0, 44.0/256.0, 44.0/256.0);
+  cairo_fill(cr);
+
+  cairo_move_to(cr, self->x+corner_radius, self->y);
+
+  //top
+  cairo_line_to(cr, self->x+self->width-corner_radius, self->y);
+
+  //top-right
+  cairo_arc(cr, self->x+self->width-corner_radius, self->y+corner_radius,
+	    corner_radius,
+	    -M_PI/2.0, 0.0);
+
+  //right
+  cairo_line_to(cr, self->x+self->width, self->y+self->height-corner_radius);
+
+  //right-bottom
+  cairo_arc(cr, self->x+self->width-corner_radius, self->y+self->height-corner_radius, corner_radius, 0.0, M_PI/2.0);
+
+  //bottom
+  cairo_line_to(cr, self->x+corner_radius, self->y+self->height);
+
+  //bottom-left
+  cairo_arc(cr, self->x+corner_radius, self->y+self->height-corner_radius,
+	    corner_radius,
+	    M_PI/2.0, M_PI);
+
+  //left
+  cairo_line_to(cr, self->x, self->y+corner_radius);
+  //top-left
+  cairo_arc(cr, self->x+corner_radius, self->y+corner_radius, 
+	    corner_radius,
+	    M_PI, -M_PI/2.0);
+  cairo_close_path(cr); //probably unecessary
+
+  cairo_pattern_t *gradient = cairo_pattern_create_linear(0, -15, 0, 25);
+  cairo_pattern_add_color_stop_rgb(gradient, 0, 210.0/256.0, 210.0/256.0, 210.0/256.0);
+  cairo_pattern_add_color_stop_rgb(gradient, 1.0, 132.0/256.0, 132.0/256.0, 132.0/256.0);
+
+  cairo_set_source(cr, gradient);
+  cairo_set_line_width(cr, 1.0);
+  cairo_stroke(cr);
+
 }
 
 GraphGtkNode*
