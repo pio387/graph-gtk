@@ -71,11 +71,11 @@
     <linearGradient
        id="linearGradient3755">
       <stop
-         style="stop-color:#848484;stop-opacity:1;"
+         style="stop-color:#09ff30;stop-opacity:1;"
          offset="0"
          id="stop3757" />
       <stop
-         style="stop-color:#d2d2d2;stop-opacity:1;"
+         style="stop-color:#a5ffb8;stop-opacity:1;"
          offset="1"
          id="stop3759" />
     </linearGradient>
@@ -106,17 +106,7 @@
        x2="276.36536"
        y2="133.62473"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(30.405592,63.63961)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient3895"
-       id="linearGradient3903"
-       x1="276.61536"
-       y1="120.80651"
-       x2="276.61536"
-       y2="110.29019"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(30.405592,63.63961)" />
+       gradientTransform="translate(30.052039,63.727998)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3895"
@@ -180,14 +170,14 @@
   </defs>
   <sodipodi:namedview
      id="base"
-     pagecolor="#d2d2d2"
+     pagecolor="#6b6b6b"
      bordercolor="#666666"
      borderopacity="1.0"
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="291.21531"
-     inkscape:cy="903.03395"
+     inkscape:zoom="1"
+     inkscape:cx="302.35558"
+     inkscape:cy="872.35831"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -204,7 +194,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -212,6 +202,12 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
+    <path
+       style="opacity:0.5;fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#DotM);marker-end:url(#DotM)"
+       d="m 162.40559,79.001792 c 84.66656,-0.500621 56.30779,99.835848 144,99.999998"
+       id="path3907"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
     <rect
        ry="3.5714276"
        y="82.716759"
@@ -254,34 +250,34 @@
          y="156.05057"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:Noticia Text;-inkscape-font-specification:Noticia Text">gegl:add</tspan></text>
     <path
-       style="fill:url(#linearGradient3903);fill-opacity:1;stroke:#848484;stroke-width:0.86625057;stroke-miterlimit:4;stroke-opacity:1"
-       d="m 301.11852,173.97328 10.71931,0 0,10.41305 -10.71931,0"
+       style="fill:#8c841b;fill-opacity:1;stroke:#848484;stroke-width:0.50000000000000000;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 300.76496,174.06167 10.71931,0 0,10.41305 -10.71931,0"
        id="rect3823"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />
     <text
        sodipodi:linespacing="125%"
        id="text3828"
-       y="181.11374"
-       x="314.58911"
+       y="182.61374"
+       x="314.08911"
        style="font-size:9.62303162px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b6b6b6;fill-opacity:1;stroke:none;font-family:'Puritan 2.0';-inkscape-font-specification:'Puritan 2.0'"
        xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:Noticia Text;-inkscape-font-specification:Noticia Text"
-         y="181.11374"
-         x="314.58911"
+         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:FreeSerif;-inkscape-font-specification:FreeSerif"
+         y="182.61374"
+         x="314.08911"
          id="tspan3830"
          sodipodi:role="line">aux</tspan><tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:Noticia Text;-inkscape-font-specification:Noticia Text"
-         y="193.14253"
-         x="314.58911"
+         style="font-size:14px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:FreeSerif;-inkscape-font-specification:FreeSerif"
+         y="200.11374"
+         x="314.08911"
          sodipodi:role="line"
          id="tspan3832" /></text>
     <path
        sodipodi:nodetypes="cccc"
        inkscape:connector-curvature="0"
        id="path3875"
-       d="m 301.11852,197.3078 10.71931,0 0,10.41305 -10.71931,0"
-       style="fill:url(#linearGradient3901);fill-opacity:1;stroke:#848484;stroke-width:0.86625057;stroke-miterlimit:4;stroke-opacity:1" />
+       d="m 300.76496,197.39619 10.71931,0 0,10.41305 -10.71931,0"
+       style="fill:url(#linearGradient3901);fill-opacity:1;stroke:#848484;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <text
        xml:space="preserve"
        style="font-size:9.62303162px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b6b6b6;fill-opacity:1;stroke:none;font-family:'Puritan 2.0';-inkscape-font-specification:'Puritan 2.0'"
@@ -295,7 +291,7 @@
          y="205.44827"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:Noticia Text;-inkscape-font-specification:Noticia Text">input</tspan></text>
     <path
-       style="fill:url(#linearGradient3905);fill-opacity:1;stroke:#848484;stroke-width:0.86625057;stroke-miterlimit:4;stroke-opacity:1"
+       style="fill:url(#linearGradient3905);fill-opacity:1;stroke:#848484;stroke-width:0.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 419.19306,196.0536 -10.71931,0 0,-10.41305 10.71931,0"
        id="path3883"
        inkscape:connector-curvature="0"
@@ -348,7 +344,7 @@
        x="53.063091"
        style="font-size:11.81792736px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b6b6b6;fill-opacity:1;stroke:none;font-family:'Puritan 2.0';-inkscape-font-specification:'Puritan 2.0'"
        xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:Noticia Text;-inkscape-font-specification:Noticia Text"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:FreeSerif;-inkscape-font-specification:FreeSerif;font-size:14px"
          y="44.150921"
          x="53.063091"
          id="tspan5295"
@@ -371,11 +367,5 @@
          x="123.89885"
          y="81.58847"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#b6b6b6;fill-opacity:1;font-family:Noticia Text;-inkscape-font-specification:Noticia Text">output</tspan></text>
-    <path
-       style="opacity:0.5;fill:none;stroke:#000000;stroke-width:1.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#DotM);marker-end:url(#DotM)"
-       d="m 162.40559,79.001792 c 84.66656,-0.500621 56.30779,99.835848 144,99.999998"
-       id="path3907"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
   </g>
 </svg>

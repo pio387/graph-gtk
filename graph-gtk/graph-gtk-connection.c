@@ -61,7 +61,8 @@ graph_gtk_connection_default_render(GraphGtkConnection* self, cairo_t* cr)
     cairo_curve_to(cr, from_x+100, from_y,
 		   to_x-100, to_y,
 		   to_x, to_y);
-	  //  cairo_line_to(cr, to_x, to_y);
+
+  //cairo_line_to(cr, to_x, to_y);
 
   cairo_stroke(cr);
 }
