@@ -48,16 +48,6 @@ graph_gtk_pad_finalize (GObject *object)
 static void
 graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
 {
-  /*if(self->is_output)
-    {
-      GSList *list;
-      for(list = self->connections; list != NULL; list = list->next)
-	{
-	  GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
-	  graph_gtk_connection_render(connection, cr);
-	}
-	}*/
-  
   gboolean connected = (g_slist_length(self->connections) > 0);
 
   int x, y;
