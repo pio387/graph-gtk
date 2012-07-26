@@ -3,6 +3,15 @@
 
 #include <gtk/gtk.h>
 
+/**
+   GraphGtkView:
+
+   GraphGtkView::nodes-connected
+   GraphGtkView::nodes-disconnected
+   GraphGtkView::node-selected
+   GraphGtkView::node-deselected
+ */
+
 G_BEGIN_DECLS
 
 #define GRAPH_TYPE_GTK_VIEW                                             \

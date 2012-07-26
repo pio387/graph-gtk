@@ -24,6 +24,7 @@ graph_gtk_pad_init (GraphGtkPad *self)
 {
   self->rel_x = 0;
   self->rel_y = 0;
+  self->node = NULL;
 }
 
 static void
@@ -42,6 +43,7 @@ graph_gtk_pad_finalize (GObject *object)
   g_signal_handlers_destroy (object);
   G_OBJECT_CLASS (graph_gtk_pad_parent_class)->finalize (object);
 }
+
 
 static void
 graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
@@ -175,6 +177,33 @@ graph_gtk_pad_is_connected_to(GraphGtkPad* self, GraphGtkPad* other)
     }
 
   return FALSE;
+}
+
+
+gdouble
+graph_gtk_pad_get_width(GraphGtkPad* self)
+{
+  if(self->node && self->node->view)
+    {
+      //TODO: cache the results and only recalculate when the name changes
+      GraphGtkView *view = self->node->view;
+      GtkWidget *widget = GTK_WIDGET(view);
+      cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
+
+      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size(cr, 13);
+      
+      cairo_text_extents_t extents;
+      cairo_text_extents(cr, self->name, &extents);
+
+      cairo_destroy(cr);
+
+      return extents.width;
+    }
+  else
+    {
+      return 100;
+    }
 }
 
 void

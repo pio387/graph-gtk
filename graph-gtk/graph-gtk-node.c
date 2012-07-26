@@ -93,6 +93,7 @@ graph_gtk_node_init (GraphGtkNode *self)
   self->y = 10;
   self->width = 118;
   self->height = 80;
+  self->view = NULL;
 }
 
 static void
@@ -259,6 +260,8 @@ graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo, int x, int y)
 {
   g_return_if_fail(IS_GRAPH_GTK_NODE(self));
 
+  graph_gtk_node_recalculate_size(self);
+
   GRAPH_GTK_NODE_GET_CLASS(self)->render_node(self, cairo, x, y);
 }
 
@@ -316,8 +319,23 @@ void
 graph_gtk_node_recalculate_size(GraphGtkNode* self)
 {
   self->height = 30;
-  
+
+  //Calculate width
+  gdouble longest_in = 0.0, longest_out = 0.0;
+
   GSList* list;
+  for(list = self->output_pads; list != NULL; list = list->next) {
+    GraphGtkPad *pad = (GraphGtkPad*)list->data;
+    longest_in = MAX(longest_in, graph_gtk_pad_get_width(pad));
+  }
+  for(list = self->input_pads; list != NULL; list = list->next) {
+    GraphGtkPad *pad = (GraphGtkPad*)list->data;
+    longest_out = MAX(longest_out, graph_gtk_pad_get_width(pad));
+  }
+
+  self->width = longest_in+longest_out+45;
+  
+  //Set pad positions and calculate height
   int count;
   for(list = self->output_pads, count = 0; list != NULL; list = list->next, count++) {
     GraphGtkPad *pad = (GraphGtkPad*)list->data;

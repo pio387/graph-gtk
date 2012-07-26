@@ -29,6 +29,9 @@ G_BEGIN_DECLS
                                GRAPH_TYPE_GTK_NODE,                     \
                                GraphGtkNodeClass))
 
+struct _GraphGtkView;
+typedef struct _GraphGtkView GraphGtkView;
+
 typedef struct _GraphGtkNode      GraphGtkNode;
 typedef struct _GraphGtkNodeClass GraphGtkNodeClass;
 
@@ -42,10 +45,12 @@ struct _GraphGtkNode
 {
   GObject parent;
 
-  GSList* input_pads;
-  GSList* output_pads;
+  GraphGtkView *view;
 
-  const gchar* name;
+  GSList *input_pads;
+  GSList *output_pads;
+
+  const gchar *name;
 
   gboolean resizable;
 

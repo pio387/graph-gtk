@@ -54,12 +54,13 @@ struct _GraphGtkPad
 
 GType graph_gtk_pad_get_type (void) G_GNUC_CONST;
 
-GraphGtkPad*		graph_gtk_pad_new(const gchar* name, gboolean is_output);
+GraphGtkPad*	graph_gtk_pad_new(const gchar* name, gboolean is_output);
 void		graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y);
 void		graph_gtk_pad_render(GraphGtkPad* self, cairo_t* cairo);
 gboolean	graph_gtk_pad_is_connected_to(GraphGtkPad* self, GraphGtkPad* other);
 void		graph_gtk_pad_connect_to(GraphGtkPad* source, GraphGtkPad* sink);
 void		graph_gtk_pad_disconnect(GraphGtkPad* self);
+gdouble		graph_gtk_pad_get_width(GraphGtkPad* self);
 
 G_END_DECLS
 

@@ -132,7 +132,6 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
 	  graph_gtk_view_add_node(graph, node);
 
 	  //unref node?
-
 	}
       gtk_widget_destroy(dialog);
     }

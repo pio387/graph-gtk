@@ -253,6 +253,7 @@ graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node)
     {
       g_object_ref_sink(G_OBJECT(node)); //is sink the right thing to do here?
       self->nodes = g_slist_append(self->nodes, node);
+      node->view = self;
 
       REDRAW();
     }
