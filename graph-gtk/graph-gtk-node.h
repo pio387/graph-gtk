@@ -52,6 +52,8 @@ struct _GraphGtkNode
 
   const gchar *name;
 
+  gpointer user_data; //intended to be used by the user, e.g. for tying GraphGtkNodes to GeglNodes. Not used for anything internally
+
   gboolean resizable;
 
   /* Rendering state */
