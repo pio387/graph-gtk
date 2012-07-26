@@ -234,12 +234,23 @@ graph_gtk_pad_disconnect(GraphGtkPad* self)
   for(list = self->connections; list != NULL; list = list->next)
     {
       GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
+
       GraphGtkPad *other;
       
       if(self->is_output)
-	other = connection->sink;
+	{
+	  other = connection->sink;
+	  g_signal_emit_by_name(self->node->view, "nodes-disconnected", 
+				self->node, self->name,
+				other->node, other->name);
+	}
       else
-	other = connection->source;
+	{
+	  other = connection->source;
+	  g_signal_emit_by_name(self->node->view, "nodes-disconnected", 
+				other->node, other->name,
+				self->node, self->name);
+	}
 
       other->connections = g_slist_remove(other->connections, connection);
 

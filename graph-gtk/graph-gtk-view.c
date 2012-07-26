@@ -57,6 +57,20 @@ graph_gtk_view_class_init (GraphGtkViewClass *klass)
 	       G_TYPE_STRING,
 	       GRAPH_TYPE_GTK_NODE,
 	       G_TYPE_STRING);
+
+  g_signal_new("nodes-disconnected",
+	       GRAPH_TYPE_GTK_VIEW,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       4,
+	       GRAPH_TYPE_GTK_NODE,
+	       G_TYPE_STRING,
+	       GRAPH_TYPE_GTK_NODE,
+	       G_TYPE_STRING);
 }
 
 static void
@@ -186,6 +200,8 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	    {
 	      self->is_mouse_connecting = TRUE;
 	      self->pad_connecting_from = pad;
+	      if(!pad->is_output)
+		graph_gtk_pad_disconnect(pad);
 	    }
 	  else if(graph_gtk_node_is_within(node, event->x, event->y))
 	    {
