@@ -1,0 +1,16 @@
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:gnome="http://api.gnome.org/doap-extensions#"
+         xmlns="http://usefulinc.com/ns/doap#">
+
+  <name xml:lang="en">graph-gtk</name>
+  <shortdesc xml:lang="en">Graph-gtk provides applications with an embedible "boxes and lines" graph editor in the form of a Gtk+ widget</shortdesc>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Isaac Wagner</foaf:name>
+      <gnome:userid>isaacbw</gnome:userid>
+    </foaf:Person>
+  </maintainer>
+</Project>
