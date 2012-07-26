@@ -6,7 +6,8 @@ AC_CONFIG_MACRO_DIR([m4])
 
 LT_INIT
 
-AC_CONFIG_FILES([  Makefile
+AC_CONFIG_FILES([  graph-gtk.pc:graph-gtk.pc.in
+		   Makefile
 		   graph-gtk/Makefile 
 		   tests/Makefile ])
 

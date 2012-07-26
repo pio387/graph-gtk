@@ -26,3 +26,5 @@ m4/
 stamp-h1
 *.o
 simple_container
+*.pc
+*.tar.gz
