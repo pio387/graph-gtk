@@ -73,6 +73,7 @@ GType graph_gtk_view_get_type (void) G_GNUC_CONST;
 GtkWidget*	graph_gtk_view_new(void);
 void		graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node);
 void		graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node);
+void		graph_gtk_view_remove_selected_nodes(GraphGtkView* self);
 void		graph_gtk_view_clear(GraphGtkView* self);
 GSList*		graph_gtk_view_get_nodes(GraphGtkView* self);
 

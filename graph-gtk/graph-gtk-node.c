@@ -94,6 +94,8 @@ graph_gtk_node_init (GraphGtkNode *self)
   self->width = 118;
   self->height = 80;
   self->view = NULL;
+  self->input_pads = NULL;
+  self->output_pads = NULL;
 }
 
 static void

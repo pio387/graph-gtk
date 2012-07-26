@@ -141,7 +141,8 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
     }
   else if(0 == g_strcmp0(label, "Delete Node"))
     {
-
+      GraphGtkView *graph = (GraphGtkView*)data;
+      graph_gtk_view_remove_selected_nodes(graph);
     }
   else if(0 == g_strcmp0(label, "Auto-arrange"))
     {

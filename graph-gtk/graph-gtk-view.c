@@ -304,11 +304,34 @@ graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node)
 }
 
 void
+graph_gtk_view_remove_selected_nodes(GraphGtkView* self)
+{
+  while(self->selected_nodes)
+    {
+       graph_gtk_view_remove_node(self, (GraphGtkNode*)self->selected_nodes->data);
+       self->selected_nodes = g_slist_remove(self->selected_nodes, (GraphGtkNode*)self->selected_nodes->data);
+    }
+}
+
+void
 graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
 {
   if(g_slist_find(self->nodes, node))
     {
       self->nodes = g_slist_remove(self->nodes, node);
+
+      GSList *pad;
+      for(pad = graph_gtk_node_get_input_pads(node); pad != NULL; pad = pad->next)
+	{
+	  graph_gtk_pad_disconnect((GraphGtkPad*)(pad->data));
+	}
+
+      for(pad = graph_gtk_node_get_output_pads(node); pad != NULL; pad = pad->next)
+	{
+	  graph_gtk_pad_disconnect((GraphGtkPad*)(pad->data));
+	}
+
+      
       g_object_unref(G_OBJECT(node));
 
       REDRAW();
