@@ -370,6 +370,12 @@ graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name)
   self->name = g_strdup(name);
 }
 
+const gchar*
+graph_gtk_node_get_name(GraphGtkNode* self)
+{
+  return self->name;
+}
+
 void
 graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output)
 {

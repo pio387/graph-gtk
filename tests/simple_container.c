@@ -3,6 +3,8 @@
 
 static void menu_item_activated (GtkMenuItem*, gpointer);
 static void button_clicked(GtkButton*, gpointer);
+static void node_selected(gpointer data, GraphGtkNode *node);
+static void node_deselected(gpointer data, GraphGtkNode *node);
 static void nodes_connected(gpointer data, GraphGtkNode *from, const gchar* output, GraphGtkNode *to, const gchar* input);
 static void nodes_disconnected(gpointer data, GraphGtkNode *from, const gchar* output, GraphGtkNode *to, const gchar* input);
 
@@ -17,6 +19,8 @@ main(gint argc,
   g_signal_connect (window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
   GtkWidget *graphView = graph_gtk_view_new();
+  g_signal_connect(graphView, "node-selected", node_selected, NULL);
+  g_signal_connect(graphView, "node-deselected", node_deselected, NULL);
   g_signal_connect(graphView, "nodes-connected", nodes_connected, NULL);
   g_signal_connect(graphView, "nodes-disconnected", nodes_disconnected, NULL);
 
@@ -169,4 +173,16 @@ static void
 nodes_disconnected(gpointer data, GraphGtkNode *from, const gchar* output, GraphGtkNode *to, const gchar* input)
 {
   g_print("Disconnected pads: %s->%s\n", output, input);
+}
+
+static void
+node_selected(gpointer data, GraphGtkNode *node)
+{
+  g_print("Selected: %s\n", graph_gtk_node_get_name(node));
+}
+
+static void
+node_deselected(gpointer data, GraphGtkNode *node)
+{
+  g_print("Deselected: %s\n", graph_gtk_node_get_name(node));
 }

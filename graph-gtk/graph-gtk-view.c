@@ -71,6 +71,28 @@ graph_gtk_view_class_init (GraphGtkViewClass *klass)
 	       G_TYPE_STRING,
 	       GRAPH_TYPE_GTK_NODE,
 	       G_TYPE_STRING);
+
+  g_signal_new("node-selected",
+	       GRAPH_TYPE_GTK_VIEW,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       1,
+	       GRAPH_TYPE_GTK_NODE);
+
+  g_signal_new("node-deselected",
+	       GRAPH_TYPE_GTK_VIEW,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       1,
+	       GRAPH_TYPE_GTK_NODE);
 }
 
 static void
@@ -185,6 +207,7 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = nodes->data;
+	  g_signal_emit_by_name(widget, "node-deselected", node);
 	  node->is_selected = FALSE;
 	}
 
@@ -206,6 +229,7 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	  else if(graph_gtk_node_is_within(node, event->x, event->y))
 	    {
 	      node->is_selected = TRUE;
+	      g_signal_emit_by_name(widget, "node-selected", node);
 	      self->selected_nodes = g_slist_append(self->selected_nodes, node);
 
 	      self->is_mouse_dragging = TRUE;
@@ -330,7 +354,6 @@ graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
 	{
 	  graph_gtk_pad_disconnect((GraphGtkPad*)(pad->data));
 	}
-
       
       g_object_unref(G_OBJECT(node));
 
