@@ -3,6 +3,7 @@
 
 static void menu_item_activated (GtkMenuItem*, gpointer);
 static void button_clicked(GtkButton*, gpointer);
+static void nodes_connected(gpointer data, GraphGtkNode *from, const gchar* output, GraphGtkNode *to, const gchar* input);
 
 gint
 main(gint argc, 
@@ -15,6 +16,7 @@ main(gint argc,
   g_signal_connect (window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     
   GtkWidget *graphView = graph_gtk_view_new();
+  g_signal_connect(graphView, "nodes-connected", nodes_connected, NULL);
 
   GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
   gtk_container_add(GTK_CONTAINER(window), vbox);
@@ -145,10 +147,17 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
     }
 }
 
-static void button_clicked(GtkButton *button, gpointer data)
+static void
+button_clicked(GtkButton *button, gpointer data)
 {
   GtkWidget *vbox = (GtkWidget*)data;
   GtkWidget *entry = gtk_entry_new();
   gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, FALSE, 2);
   gtk_widget_show(GTK_WIDGET(entry));
+}
+
+static void
+nodes_connected(gpointer data, GraphGtkNode *from, const gchar* output, GraphGtkNode *to, const gchar* input)
+{
+  g_print("Connected pads: %s->%s\n", output, input);
 }

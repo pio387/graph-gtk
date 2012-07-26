@@ -39,6 +39,24 @@ graph_gtk_view_class_init (GraphGtkViewClass *klass)
   widget_class->button_press_event = graph_gtk_view_button_pressed;
   widget_class->button_release_event = graph_gtk_view_button_released;
   widget_class->motion_notify_event = graph_gtk_view_mouse_moved;
+
+  //Signals
+  /* Nodes connected:
+   * void nodes_connected(GraphGtkNode *from, const gchar* output, GraphGtkNode *to, const gchar* input);
+   */
+  g_signal_new("nodes-connected",
+	       GRAPH_TYPE_GTK_VIEW,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       4,
+	       GRAPH_TYPE_GTK_NODE,
+	       G_TYPE_STRING,
+	       GRAPH_TYPE_GTK_NODE,
+	       G_TYPE_STRING);
 }
 
 static void
@@ -222,9 +240,19 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 	      g_print("Connecting to pad: %s\n", pad->name);
 	      self->is_mouse_connecting = FALSE;
 	      if(self->pad_connecting_from->is_output)
-		graph_gtk_pad_connect_to(self->pad_connecting_from, pad);
+		{
+		  graph_gtk_pad_connect_to(self->pad_connecting_from, pad);
+		  g_signal_emit_by_name(self, "nodes-connected", 
+					self->pad_connecting_from->node, self->pad_connecting_from->name,
+					pad->node, pad->name);
+		}
 	      else
-		graph_gtk_pad_connect_to(pad, self->pad_connecting_from);
+		{
+		  graph_gtk_pad_connect_to(pad, self->pad_connecting_from);
+		  g_signal_emit_by_name(self, "nodes-connected", 
+					pad->node, pad->name,
+					self->pad_connecting_from->node, self->pad_connecting_from->name);
+		}
 	    }
 	}
     }
