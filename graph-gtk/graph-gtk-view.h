@@ -61,6 +61,8 @@ struct _GraphGtkView
   gboolean is_mouse_connecting;
   GraphGtkPad* pad_connecting_from;
 
+  gdouble mouse_x, mouse_y;
+
   gboolean is_mouse_dragging; //mouse was pressed on a node and has not yet been released
   gint drag_begin_x, drag_begin_y; //mouse coordinates in screen space when dragging began
 

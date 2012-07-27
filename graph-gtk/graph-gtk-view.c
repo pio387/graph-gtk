@@ -183,6 +183,19 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 	}
     }
 
+  if(view->is_mouse_connecting)
+    {
+      int x, y;
+      graph_gtk_pad_get_position(view->pad_connecting_from, &x, &y);
+
+      cairo_move_to(cr, x, y);
+      cairo_line_to(cr, view->mouse_x, view->mouse_y);
+
+      cairo_set_source_rgb(cr, 0.0, 1.0, 0.0);
+      cairo_set_line_width(cr, 1.0);
+      cairo_stroke(cr);
+    }
+
   GSList* list;
   for(list = view->nodes; list != NULL; list = list->next)
     {
@@ -271,6 +284,8 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
     }
   else if(self->is_mouse_connecting)
     {
+      self->is_mouse_connecting = FALSE;
+
       GSList *nodes;
       for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
 	{
@@ -307,6 +322,14 @@ static gboolean
 graph_gtk_view_mouse_moved(GtkWidget* widget, GdkEventMotion* event)
 {
   GraphGtkView *self = GRAPH_GTK_VIEW(widget);
+ 
+  self->mouse_x = event->x;
+  self->mouse_y = event->y;
+
+  if(self->is_mouse_connecting)
+    {
+      REDRAW();
+    }
 
   if(self->is_mouse_dragging)
     {
