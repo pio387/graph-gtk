@@ -183,6 +183,13 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 	}
     }
 
+  GSList* list;
+  for(list = view->nodes; list != NULL; list = list->next)
+    {
+      GraphGtkNode* node = (GraphGtkNode*)list->data;
+      graph_gtk_node_render(node, cr);
+    }
+
   if(view->is_mouse_connecting)
     {
       int x, y;
@@ -191,16 +198,9 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
       cairo_move_to(cr, x, y);
       cairo_line_to(cr, view->mouse_x, view->mouse_y);
 
-      cairo_set_source_rgb(cr, 0.0, 1.0, 0.0);
-      cairo_set_line_width(cr, 1.0);
+      cairo_set_source_rgb(cr, 0.0, 1, 0.0);
+      cairo_set_line_width(cr, 0.5);
       cairo_stroke(cr);
-    }
-
-  GSList* list;
-  for(list = view->nodes; list != NULL; list = list->next)
-    {
-      GraphGtkNode* node = (GraphGtkNode*)list->data;
-      graph_gtk_node_render(node, cr);
     }
 
   return FALSE;
@@ -284,6 +284,8 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
     }
   else if(self->is_mouse_connecting)
     {
+      REDRAW();
+
       self->is_mouse_connecting = FALSE;
 
       GSList *nodes;
