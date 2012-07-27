@@ -335,7 +335,22 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
     longest_out = MAX(longest_out, graph_gtk_pad_get_width(pad));
   }
 
-  self->width = longest_in+longest_out+45;
+  GraphGtkView *view = self->view;
+  cairo_text_extents_t extents;
+  if(view)
+    {
+      GtkWidget *widget = GTK_WIDGET(view);
+      cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
+
+      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font_size(cr, 13);
+      
+      cairo_text_extents(cr, self->name, &extents);
+
+      cairo_destroy(cr);
+    }
+
+  self->width = MAX(extents.width+20, longest_in+longest_out+45);
   
   //Set pad positions and calculate height
   int count;
