@@ -141,8 +141,8 @@ graph_gtk_pad_get_position(GraphGtkPad* self, int *x, int *y)
 {
   g_return_if_fail(IS_GRAPH_GTK_PAD(self));
 
-  *x = self->rel_x+self->node->x;
-  *y = self->rel_y+self->node->y;
+  *x = self->rel_x+self->node->x+self->node->offset_x;
+  *y = self->rel_y+self->node->y+self->node->offset_y;
 }
 
 gboolean

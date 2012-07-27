@@ -187,7 +187,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
   for(list = view->nodes; list != NULL; list = list->next)
     {
       GraphGtkNode* node = (GraphGtkNode*)list->data;
-      graph_gtk_node_render(node, cr, 0, 0);
+      graph_gtk_node_render(node, cr);
     }
 
   return FALSE;
@@ -207,6 +207,7 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = nodes->data;
+	  //Todo: don't emit signal if if is just going to be selected again
 	  g_signal_emit_by_name(widget, "node-deselected", node);
 	  node->is_selected = FALSE;
 	}
@@ -263,6 +264,8 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 	    {
 	      node->x += event->x-self->drag_begin_x;
 	      node->y += event->y-self->drag_begin_y;
+	      node->offset_x = 0;
+	      node->offset_y = 0;
 	    }
 	}
     }
@@ -304,6 +307,19 @@ static gboolean
 graph_gtk_view_mouse_moved(GtkWidget* widget, GdkEventMotion* event)
 {
   GraphGtkView *self = GRAPH_GTK_VIEW(widget);
+
+  if(self->is_mouse_dragging)
+    {
+      GSList* nodes;
+      for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = nodes->data;
+	  node->offset_x = event->x-self->drag_begin_x;
+	  node->offset_y = event->y-self->drag_begin_y;
+	}
+
+      REDRAW();
+    }
 
   return FALSE;
 }
