@@ -297,7 +297,6 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 	  if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
 	    {
 	      REDRAW();
-	      g_print("Connecting to pad: %s\n", pad->name);
 	      self->is_mouse_connecting = FALSE;
 	      if(self->pad_connecting_from->is_output)
 		{
