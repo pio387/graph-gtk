@@ -61,6 +61,10 @@ struct _GraphGtkNode
   gint offset_x, offset_y; //drag offset
   gint width, height;
   gboolean is_selected; //set and unset by the GraphGtkView
+  cairo_surface_t *image;
+  gint img_width, img_height; //-1 meant default or scale based on other
+  gboolean show_image;
+  gboolean failed_size_calculation;
 };
 
 GType graph_gtk_node_get_type (void) G_GNUC_CONST;
@@ -74,9 +78,12 @@ GSList*		graph_gtk_node_get_pads(GraphGtkNode* self);
 GSList*		graph_gtk_node_get_input_pads(GraphGtkNode* self);
 GSList*		graph_gtk_node_get_output_pads(GraphGtkNode* self);
 void		graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad);
-void		graph_gtk_node_recalculate_size(GraphGtkNode* self);
+gboolean	graph_gtk_node_recalculate_size(GraphGtkNode* self);
 gboolean	graph_gtk_node_is_within(GraphGtkNode* self, int x, int y);	//check whether this position is within the node
 GraphGtkPad*	graph_gtk_node_is_on_pad(GraphGtkNode* self, int x, int y);	//check whether this position is within a pad on this node
+void		graph_gtk_node_set_image(GraphGtkNode* self, cairo_surface_t* image);
+void		graph_gtk_node_set_image_size(GraphGtkNode* self, gint width, gint height);
+void		graph_gtk_node_show_image(GraphGtkNode* self, gboolean show_image);
 
 G_END_DECLS
 

@@ -6,67 +6,67 @@
 
 void cairo_image_surface_blur( cairo_surface_t* surface, double radius )
 {
-    // Steve Hanov, 2009
-    // Released into the public domain.
+  // Steve Hanov, 2009
+  // Released into the public domain.
     
-    // get width, height
-    int width = cairo_image_surface_get_width( surface );
-    int height = cairo_image_surface_get_height( surface );
-    unsigned char* dst = (unsigned char*)malloc(width*height*4);
-    unsigned* precalc = 
-        (unsigned*)malloc(width*height*sizeof(unsigned));
-    unsigned char* src = cairo_image_surface_get_data( surface );
-    double mul=1.f/((radius*2)*(radius*2));
-    int channel;
+  // get width, height
+  int width = cairo_image_surface_get_width( surface );
+  int height = cairo_image_surface_get_height( surface );
+  unsigned char* dst = (unsigned char*)malloc(width*height*4);
+  unsigned* precalc = 
+    (unsigned*)malloc(width*height*sizeof(unsigned));
+  unsigned char* src = cairo_image_surface_get_data( surface );
+  double mul=1.f/((radius*2)*(radius*2));
+  int channel;
     
-    // The number of times to perform the averaging. According to wikipedia,
-    // three iterations is good enough to pass for a gaussian.
-    const MAX_ITERATIONS = 3; 
-    int iteration;
+  // The number of times to perform the averaging. According to wikipedia,
+  // three iterations is good enough to pass for a gaussian.
+  const MAX_ITERATIONS = 3; 
+  int iteration;
 
-    memcpy( dst, src, width*height*4 );
+  memcpy( dst, src, width*height*4 );
 
-    for ( iteration = 0; iteration < MAX_ITERATIONS; iteration++ ) {
-        for( channel = 0; channel < 4; channel++ ) {
-            int x,y;
+  for ( iteration = 0; iteration < MAX_ITERATIONS; iteration++ ) {
+    for( channel = 0; channel < 4; channel++ ) {
+      int x,y;
 
-            // precomputation step.
-            unsigned char* pix = src;
-            unsigned* pre = precalc;
+      // precomputation step.
+      unsigned char* pix = src;
+      unsigned* pre = precalc;
 
-            pix += channel;
-            for (y=0;y<height;y++) {
-                for (x=0;x<width;x++) {
-                    int tot=pix[0];
-                    if (x>0) tot+=pre[-1];
-                    if (y>0) tot+=pre[-width];
-                    if (x>0 && y>0) tot-=pre[-width-1];
-                    *pre++=tot;
-                    pix += 4;
-                }
-            }
+      pix += channel;
+      for (y=0;y<height;y++) {
+	for (x=0;x<width;x++) {
+	  int tot=pix[0];
+	  if (x>0) tot+=pre[-1];
+	  if (y>0) tot+=pre[-width];
+	  if (x>0 && y>0) tot-=pre[-width-1];
+	  *pre++=tot;
+	  pix += 4;
+	}
+      }
 
-            // blur step.
-            pix = dst + (int)radius * width * 4 + (int)radius * 4 + channel;
-            for (y=radius;y<height-radius;y++) {
-                for (x=radius;x<width-radius;x++) {
-                    int l = x < radius ? 0 : x - radius;
-                    int t = y < radius ? 0 : y - radius;
-                    int r = x + radius >= width ? width - 1 : x + radius;
-                    int b = y + radius >= height ? height - 1 : y + radius;
-                    int tot = precalc[r+b*width] + precalc[l+t*width] - 
-                        precalc[l+b*width] - precalc[r+t*width];
-                    *pix=(unsigned char)(tot*mul);
-                    pix += 4;
-                }
-                pix += (int)radius * 2 * 4;
-            }
-        }
-        memcpy( src, dst, width*height*4 );
+      // blur step.
+      pix = dst + (int)radius * width * 4 + (int)radius * 4 + channel;
+      for (y=radius;y<height-radius;y++) {
+	for (x=radius;x<width-radius;x++) {
+	  int l = x < radius ? 0 : x - radius;
+	  int t = y < radius ? 0 : y - radius;
+	  int r = x + radius >= width ? width - 1 : x + radius;
+	  int b = y + radius >= height ? height - 1 : y + radius;
+	  int tot = precalc[r+b*width] + precalc[l+t*width] - 
+	    precalc[l+b*width] - precalc[r+t*width];
+	  *pix=(unsigned char)(tot*mul);
+	  pix += 4;
+	}
+	pix += (int)radius * 2 * 4;
+      }
     }
+    memcpy( src, dst, width*height*4 );
+  }
 
-    free( dst );
-    free( precalc );
+  free( dst );
+  free( precalc );
 }
 
 static void graph_gtk_node_dispose (GObject *object);
@@ -96,6 +96,11 @@ graph_gtk_node_init (GraphGtkNode *self)
   self->view = NULL;
   self->input_pads = NULL;
   self->output_pads = NULL;
+  self->image = NULL;
+  self->img_width = -1;
+  self->img_height = -1;
+  self->show_image = FALSE;
+  self->failed_size_calculation = TRUE;
 }
 
 static void
@@ -249,6 +254,41 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
     {
       graph_gtk_pad_render((GraphGtkPad*)pad->data, cr);
     }
+
+  if(self->show_image)
+    {
+      //cairo_set_source_surface(cr, self->image, 0, 0);
+      gdouble surface_w = cairo_image_surface_get_width(self->image);
+      gdouble surface_h = cairo_image_surface_get_height(self->image);
+
+      gdouble image_w = self->img_width, image_h = self->img_height;
+      if(self->img_width == -1 && self->img_height != -1)
+	{
+	  image_h = self->img_height;
+	  image_w = (image_h/surface_h)*surface_w;
+	}
+      else if(self->img_width != -1 && self->img_height == -1)
+	{
+	  image_w = self->img_width;
+	  image_h = (image_w/surface_w)*surface_h;
+	}
+
+      cairo_pattern_t *pattern = cairo_pattern_create_for_surface(self->image);
+
+      gdouble x = self->x+self->offset_x+4;
+      gdouble y = self->y+self->offset_y+20;
+
+      cairo_matrix_t transform;
+      cairo_matrix_init_scale(&transform, surface_w/image_w, surface_h/image_h);
+      cairo_matrix_translate(&transform, -x, -y);
+      cairo_pattern_set_matrix(pattern, &transform);
+
+      cairo_set_source(cr, pattern);
+      cairo_rectangle(cr, x, y, image_w, image_h);
+      cairo_fill(cr);
+
+      cairo_pattern_destroy(pattern);
+    }
 }
 
 GraphGtkNode*
@@ -262,7 +302,8 @@ graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo)
 {
   g_return_if_fail(IS_GRAPH_GTK_NODE(self));
 
-  graph_gtk_node_recalculate_size(self);
+  if(self->failed_size_calculation)
+    self->failed_size_calculation = !graph_gtk_node_recalculate_size(self);
 
   GRAPH_GTK_NODE_GET_CLASS(self)->render_node(self, cairo);
 }
@@ -317,9 +358,13 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
   graph_gtk_pad_connect_to(source_pad, sink_pad);
 }
 
-void
+gboolean
 graph_gtk_node_recalculate_size(GraphGtkNode* self)
 {
+  GraphGtkView *view = self->view;
+  if(!view)
+    return FALSE;
+
   self->height = 30;
 
   //Calculate width
@@ -335,48 +380,75 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
     longest_out = MAX(longest_out, graph_gtk_pad_get_width(pad));
   }
 
-  GraphGtkView *view = self->view;
   cairo_text_extents_t extents;
-  if(view)
-    {
-      GtkWidget *widget = GTK_WIDGET(view);
-      cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
+  GtkWidget *widget = GTK_WIDGET(view);
+  cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
 
-      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-      cairo_set_font_size(cr, 13);
+  cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_set_font_size(cr, 13);
       
-      cairo_text_extents(cr, self->name, &extents);
+  cairo_text_extents(cr, self->name, &extents);
 
-      cairo_destroy(cr);
-    }
+  cairo_destroy(cr);
 
   self->width = MAX(extents.width+20, longest_in+longest_out+45);
+
+  gdouble image_w, image_h;
+
+  if(self->show_image)
+    {
+      gdouble surface_w = cairo_image_surface_get_width(self->image);
+      gdouble surface_h = cairo_image_surface_get_height(self->image);
+
+      image_w = self->img_width;
+      image_h = self->img_height;
+
+      if(self->img_width == -1 && self->img_height != -1)
+	{
+	  image_h = self->img_height;
+	  image_w = image_h/surface_h*surface_w;
+	}
+      else if(self->img_width != -1 && self->img_height == -1)
+	{
+	  image_w = self->img_width;
+	  image_h = image_w/surface_w*surface_h;
+	}
+
+      self->width = MAX(self->width, image_w+8);
+    }
   
   //Set pad positions and calculate height
   int count;
+  int m_count;
   for(list = self->output_pads, count = 0; list != NULL; list = list->next, count++) {
     GraphGtkPad *pad = (GraphGtkPad*)list->data;
 
     pad->rel_x = self->width-4.5;
     pad->rel_y = 30+count*25;
+    if(self->show_image)
+      pad->rel_y += image_h+6;
   }
 
-  count -= 1;
-
-  if(50+count*25 > self->height)
-    self->height = 50+count*25;
+  int mcount = count;
 
   for(list = self->input_pads, count = 0; list != NULL; list = list->next, count++) {
     GraphGtkPad *pad = (GraphGtkPad*)list->data;
 
     pad->rel_x = 5.5;
     pad->rel_y = 30+count*25;
+    if(self->show_image)
+      pad->rel_y += image_h+6;
   }
 
-  count -= 1;
+  mcount = MAX(count, mcount);
+  mcount--;
 
-  if(50+count*25 > self->height)
-    self->height = 50+count*25;
+  int imgh = (self->show_image ? image_h : 0) ;
+
+  if(50+mcount*25 + imgh > self->height)
+    self->height = 50+mcount*25 + imgh;
+
+  return TRUE;
 }
 
 void
@@ -453,4 +525,26 @@ graph_gtk_node_is_on_pad(GraphGtkNode* self, int x, int y)
     }
 
   return NULL;
+}
+
+void
+graph_gtk_node_set_image(GraphGtkNode* self, cairo_surface_t* image)
+{
+  self->image = image;
+  graph_gtk_node_recalculate_size(self);
+}
+
+void
+graph_gtk_node_set_image_size(GraphGtkNode* self, gint width, gint height)
+{
+  self->img_width = width;
+  self->img_height = height;
+  graph_gtk_node_recalculate_size(self);
+}
+
+void
+graph_gtk_node_show_image(GraphGtkNode* self, gboolean show_image)
+{
+  self->show_image = show_image;
+  graph_gtk_node_recalculate_size(self);
 }
