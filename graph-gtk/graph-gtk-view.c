@@ -93,6 +93,17 @@ graph_gtk_view_class_init (GraphGtkViewClass *klass)
 	       G_TYPE_NONE,
 	       1,
 	       GRAPH_TYPE_GTK_NODE);
+
+  g_signal_new("node-doubleclicked",
+	       GRAPH_TYPE_GTK_VIEW,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       1,
+	       GRAPH_TYPE_GTK_NODE);
 }
 
 static void
@@ -216,18 +227,19 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       REDRAW();
 
       //TODO: shift click to select multiple nodes
+      GSList *deselect = g_slist_copy(self->selected_nodes);
       GSList* nodes;
       for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = nodes->data;
 	  //Todo: don't emit signal if if is just going to be selected again
-	  g_signal_emit_by_name(widget, "node-deselected", node);
 	  node->is_selected = FALSE;
 	}
 
       g_slist_free(self->selected_nodes);
       self->selected_nodes = NULL;
 
+      GSList *select = NULL;
       for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
@@ -243,7 +255,8 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	  else if(graph_gtk_node_is_within(node, event->x, event->y))
 	    {
 	      node->is_selected = TRUE;
-	      g_signal_emit_by_name(widget, "node-selected", node);
+	      deselect = g_slist_remove(deselect, node);
+	      select = g_slist_append(select, node);
 	      self->selected_nodes = g_slist_append(self->selected_nodes, node);
 
 	      self->is_mouse_dragging = TRUE;
@@ -253,7 +266,30 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	      break;
 	    }
 	}
+
+      //This is a pretty slow way to do it, though it shouldn't matter given how few nodes most graphs will have
+      for(nodes = deselect; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = nodes->data;
+	  g_signal_emit_by_name(widget, "node-deselected", GRAPH_GTK_NODE(node));
+	}
+
+      for(nodes = select; nodes != NULL; nodes = nodes->next)
+	{
+	  GraphGtkNode *node = nodes->data;
+	  g_signal_emit_by_name(widget, "node-selected", GRAPH_GTK_NODE(node));
+
+
+	  if(!nodes->next && event->type == GDK_2BUTTON_PRESS)
+	    {
+	      g_signal_emit_by_name(widget, "node-doubleclicked", GRAPH_GTK_NODE(node));
+	    }
+	}
+      
+      g_slist_free(deselect);
+      g_slist_free(select);
     }
+
 
   return FALSE;
 }
