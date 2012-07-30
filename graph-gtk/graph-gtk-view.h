@@ -68,6 +68,7 @@ struct _GraphGtkView
 
   gboolean is_mouse_panning; //mouse was pressed on the canvas and has not yet been released
   gint pan_x, pan_y; //current pan offset
+  gint pan_begin_x, pan_begin_y;
 };
 
 GType graph_gtk_view_get_type (void) G_GNUC_CONST;

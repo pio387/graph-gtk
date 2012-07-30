@@ -255,7 +255,7 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
       graph_gtk_pad_render((GraphGtkPad*)pad->data, cr);
     }
 
-  if(self->show_image)
+  if(self->show_image && self->image)
     {
       //cairo_set_source_surface(cr, self->image, 0, 0);
       gdouble surface_w = cairo_image_surface_get_width(self->image);
@@ -365,6 +365,8 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
   if(!view)
     return FALSE;
 
+  gtk_widget_queue_draw(GTK_WIDGET(view));
+
   self->height = 30;
 
   //Calculate width
@@ -393,9 +395,9 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
 
   self->width = MAX(extents.width+20, longest_in+longest_out+45);
 
-  gdouble image_w, image_h;
+  gdouble image_w = 0, image_h = 0;
 
-  if(self->show_image)
+  if(self->show_image && self->image)
     {
       gdouble surface_w = cairo_image_surface_get_width(self->image);
       gdouble surface_h = cairo_image_surface_get_height(self->image);

@@ -117,6 +117,8 @@ graph_gtk_view_init (GraphGtkView *self)
 			 GDK_KEY_RELEASE_MASK);
 
   gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
+  self->pan_x = 0;
+  self->pan_y = 0;
 }
 
 static void
@@ -155,14 +157,14 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 {
   GraphGtkView *view = GRAPH_GTK_VIEW(widget);
 
-  /*
-    Need to figure out a clean way of letting the user render a custom background, such as the 
-    result of the combined graph operations. This should either be a signal or simply let the
-    user set a cairo surface property on the GeglGtkView. For now just render a solid grey background
-  */
-
   cairo_set_source_rgb(cr, 124.0/256.0, 124.0/256.0, 124.0/256.0);
   cairo_paint(cr);
+
+  cairo_translate(cr, -view->pan_x, -view->pan_y);
+  if(view->is_mouse_panning)
+    {
+      cairo_translate(cr, -(view->pan_begin_x-view->mouse_x), -(view->pan_begin_y-view->mouse_y));
+    }
 
   //render the graph_gtk_view
   GSList* nodes;
@@ -289,7 +291,12 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       g_slist_free(deselect);
       g_slist_free(select);
     }
-
+  else if(event->button == 3)
+    {
+      self->is_mouse_panning = TRUE;
+      self->pan_begin_x = event->x;
+      self->pan_begin_y = event->y;
+    }
 
   return FALSE;
 }
@@ -299,56 +306,68 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 {
   GraphGtkView *self = GRAPH_GTK_VIEW(widget);
 
-  if(self->is_mouse_dragging)
+  if(event->button == 1)
     {
-      REDRAW();
-
-      self->is_mouse_dragging = FALSE;
-
-      GSList* nodes;
-      for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
+      if(self->is_mouse_dragging)
 	{
-	  GraphGtkNode *node = nodes->data;
-	  if(node->is_selected)
+	  REDRAW();
+
+	  self->is_mouse_dragging = FALSE;
+
+	  GSList* nodes;
+	  for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	    {
-	      node->x += event->x-self->drag_begin_x;
-	      node->y += event->y-self->drag_begin_y;
-	      node->offset_x = 0;
-	      node->offset_y = 0;
+	      GraphGtkNode *node = nodes->data;
+	      if(node->is_selected)
+		{
+		  node->x += event->x-self->drag_begin_x;
+		  node->y += event->y-self->drag_begin_y;
+		  node->offset_x = 0;
+		  node->offset_y = 0;
+		}
+	    }
+	}
+      else if(self->is_mouse_connecting)
+	{
+	  REDRAW();
+
+	  self->is_mouse_connecting = FALSE;
+
+	  GSList *nodes;
+	  for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
+	    {
+	      GraphGtkNode *node = (GraphGtkNode*)nodes->data;
+	      GraphGtkPad *pad;
+
+	      if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
+		{
+		  REDRAW();
+		  self->is_mouse_connecting = FALSE;
+		  if(self->pad_connecting_from->is_output)
+		    {
+		      graph_gtk_pad_connect_to(self->pad_connecting_from, pad);
+		      g_signal_emit_by_name(self, "nodes-connected", 
+					    self->pad_connecting_from->node, self->pad_connecting_from->name,
+					    pad->node, pad->name);
+		    }
+		  else
+		    {
+		      graph_gtk_pad_connect_to(pad, self->pad_connecting_from);
+		      g_signal_emit_by_name(self, "nodes-connected", 
+					    pad->node, pad->name,
+					    self->pad_connecting_from->node, self->pad_connecting_from->name);
+		    }
+		}
 	    }
 	}
     }
-  else if(self->is_mouse_connecting)
+  else if(event->button == 3)
     {
-      REDRAW();
-
-      self->is_mouse_connecting = FALSE;
-
-      GSList *nodes;
-      for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
+      if(self->is_mouse_panning)
 	{
-	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
-	  GraphGtkPad *pad;
-
-	  if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
-	    {
-	      REDRAW();
-	      self->is_mouse_connecting = FALSE;
-	      if(self->pad_connecting_from->is_output)
-		{
-		  graph_gtk_pad_connect_to(self->pad_connecting_from, pad);
-		  g_signal_emit_by_name(self, "nodes-connected", 
-					self->pad_connecting_from->node, self->pad_connecting_from->name,
-					pad->node, pad->name);
-		}
-	      else
-		{
-		  graph_gtk_pad_connect_to(pad, self->pad_connecting_from);
-		  g_signal_emit_by_name(self, "nodes-connected", 
-					pad->node, pad->name,
-					self->pad_connecting_from->node, self->pad_connecting_from->name);
-		}
-	    }
+	  self->is_mouse_panning = FALSE;
+	  self->pan_x += self->pan_begin_x-self->mouse_x;
+	  self->pan_y += self->pan_begin_y-self->mouse_y;
 	}
     }
 
@@ -363,7 +382,7 @@ graph_gtk_view_mouse_moved(GtkWidget* widget, GdkEventMotion* event)
   self->mouse_x = event->x;
   self->mouse_y = event->y;
 
-  if(self->is_mouse_connecting)
+  if(self->is_mouse_connecting || self->is_mouse_panning)
     {
       REDRAW();
     }
