@@ -53,10 +53,10 @@ struct _GraphGtkView
 {
   GtkDrawingArea parent;
 
-  GSList* nodes;
+  GList* nodes;
 
   /* private state management */
-  GSList* selected_nodes; //list of currently selected nodes
+  GList* selected_nodes; //list of currently selected nodes
 
   gboolean is_mouse_connecting;
   GraphGtkPad* pad_connecting_from;
@@ -69,6 +69,8 @@ struct _GraphGtkView
   gboolean is_mouse_panning; //mouse was pressed on the canvas and has not yet been released
   gint pan_x, pan_y; //current pan offset
   gint pan_begin_x, pan_begin_y;
+
+  cairo_surface_t *bg;
 };
 
 GType graph_gtk_view_get_type (void) G_GNUC_CONST;
@@ -78,7 +80,8 @@ void		graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node);
 void		graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node);
 void		graph_gtk_view_remove_selected_nodes(GraphGtkView* self);
 void		graph_gtk_view_clear(GraphGtkView* self);
-GSList*		graph_gtk_view_get_nodes(GraphGtkView* self);
+GList*		graph_gtk_view_get_nodes(GraphGtkView* self);
+void graph_gtk_view_set_bg(GraphGtkView* self, cairo_surface_t* bg); //NULL means no background should be rendered
 
 G_END_DECLS
 

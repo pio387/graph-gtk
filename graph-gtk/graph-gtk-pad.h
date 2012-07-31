@@ -49,7 +49,7 @@ struct _GraphGtkPad
 
   gint rel_x, rel_y; //coordinates of the center this pad relative to the containing node's coordinates. These values are set by the containing node when the node is constructed and if/when the node is resized. It is up to the containing node to made sure these coordinates are up to date
   gboolean is_output; //input pads can only have one connection. New connections replace old connections
-  GSList* connections; //each GraphGtkConnection* is referenced twice, once each by the GraphGtkPads at either end
+  GList* connections; //each GraphGtkConnection* is referenced twice, once each by the GraphGtkPads at either end
 };
 
 GType graph_gtk_pad_get_type (void) G_GNUC_CONST;

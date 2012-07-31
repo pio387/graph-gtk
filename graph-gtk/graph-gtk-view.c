@@ -119,6 +119,7 @@ graph_gtk_view_init (GraphGtkView *self)
   gtk_widget_set_can_focus(GTK_WIDGET(self), TRUE);
   self->pan_x = 0;
   self->pan_y = 0;
+  self->bg = NULL;
 }
 
 static void
@@ -160,6 +161,27 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
   cairo_set_source_rgb(cr, 124.0/256.0, 124.0/256.0, 124.0/256.0);
   cairo_paint(cr);
 
+  if(view->bg)
+    {
+      gdouble bg_w = cairo_image_surface_get_width(view->bg);
+      gdouble bg_h = cairo_image_surface_get_height(view->bg);
+
+
+      gint width = gdk_window_get_width(widget->window);
+      gint height = gdk_window_get_height(widget->window);
+
+      cairo_pattern_t *pattern = cairo_pattern_create_for_surface(view->bg);
+      cairo_matrix_t transform;
+      cairo_matrix_init_translate(&transform, -(width/2-bg_w/2), -(height/2-bg_h/2));
+      cairo_pattern_set_matrix(pattern, &transform);
+
+      cairo_set_source(cr, pattern);
+      cairo_rectangle(cr, width/2-bg_w/2, height/2-bg_h/2, bg_w, bg_h);
+      cairo_fill(cr);
+
+      cairo_pattern_destroy(pattern);
+    }
+
   cairo_translate(cr, -view->pan_x, -view->pan_y);
   if(view->is_mouse_panning)
     {
@@ -167,16 +189,16 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
     }
 
   //render the graph_gtk_view
-  GSList* nodes;
+  GList* nodes;
   for(nodes = view->nodes; nodes != NULL; nodes = nodes->next)
     {
       GraphGtkNode *node = (GraphGtkNode*)nodes->data;
 
-      GSList *pads;
+      GList *pads;
       for(pads = graph_gtk_node_get_input_pads(node); pads != NULL; pads = pads->next)
 	{
 	  GraphGtkPad *pad = (GraphGtkPad*)pads->data;
-	  GSList *connections;
+	  GList *connections;
 	  for(connections = pad->connections; connections != NULL; connections = connections->next)
 	    {
 	      GraphGtkConnection *connection = (GraphGtkConnection*)connections->data;
@@ -187,7 +209,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
       for(pads = graph_gtk_node_get_output_pads(node); pads != NULL; pads = pads->next)
 	{
 	  GraphGtkPad *pad = (GraphGtkPad*)pads->data;
-	  GSList *connections;
+	  GList *connections;
 	  for(connections = pad->connections; connections != NULL; connections = connections->next)
 	    {
 	      GraphGtkConnection *connection = (GraphGtkConnection*)connections->data;
@@ -196,7 +218,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 	}
     }
 
-  GSList* list;
+  GList* list;
   for(list = view->nodes; list != NULL; list = list->next)
     {
       GraphGtkNode* node = (GraphGtkNode*)list->data;
@@ -229,8 +251,8 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       REDRAW();
 
       //TODO: shift click to select multiple nodes
-      GSList *deselect = g_slist_copy(self->selected_nodes);
-      GSList* nodes;
+      GList *deselect = g_list_copy(self->selected_nodes);
+      GList* nodes;
       for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = nodes->data;
@@ -238,10 +260,10 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	  node->is_selected = FALSE;
 	}
 
-      g_slist_free(self->selected_nodes);
+      g_list_free(self->selected_nodes);
       self->selected_nodes = NULL;
 
-      GSList *select = NULL;
+      GList *select = NULL;
       for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
@@ -257,9 +279,9 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	  else if(graph_gtk_node_is_within(node, event->x, event->y))
 	    {
 	      node->is_selected = TRUE;
-	      deselect = g_slist_remove(deselect, node);
-	      select = g_slist_append(select, node);
-	      self->selected_nodes = g_slist_append(self->selected_nodes, node);
+	      deselect = g_list_remove(deselect, node);
+	      select = g_list_append(select, node);
+	      self->selected_nodes = g_list_append(self->selected_nodes, node);
 
 	      self->is_mouse_dragging = TRUE;
 	      self->drag_begin_x = event->x;
@@ -288,8 +310,8 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	    }
 	}
       
-      g_slist_free(deselect);
-      g_slist_free(select);
+      g_list_free(deselect);
+      g_list_free(select);
     }
   else if(event->button == 3)
     {
@@ -314,7 +336,7 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 
 	  self->is_mouse_dragging = FALSE;
 
-	  GSList* nodes;
+	  GList* nodes;
 	  for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	    {
 	      GraphGtkNode *node = nodes->data;
@@ -333,7 +355,7 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 
 	  self->is_mouse_connecting = FALSE;
 
-	  GSList *nodes;
+	  GList *nodes;
 	  for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
 	    {
 	      GraphGtkNode *node = (GraphGtkNode*)nodes->data;
@@ -389,7 +411,7 @@ graph_gtk_view_mouse_moved(GtkWidget* widget, GdkEventMotion* event)
 
   if(self->is_mouse_dragging)
     {
-      GSList* nodes;
+      GList* nodes;
       for(nodes = self->selected_nodes; nodes != NULL; nodes = nodes->next)
 	{
 	  GraphGtkNode *node = nodes->data;
@@ -412,10 +434,10 @@ graph_gtk_view_new()
 void
 graph_gtk_view_add_node(GraphGtkView* self, GraphGtkNode* node)
 {
-  if(!g_slist_find(self->nodes, node))
+  if(!g_list_find(self->nodes, node))
     {
       g_object_ref_sink(G_OBJECT(node)); //is sink the right thing to do here?
-      self->nodes = g_slist_append(self->nodes, node);
+      self->nodes = g_list_append(self->nodes, node);
       node->view = self;
 
       REDRAW();
@@ -428,18 +450,18 @@ graph_gtk_view_remove_selected_nodes(GraphGtkView* self)
   while(self->selected_nodes)
     {
        graph_gtk_view_remove_node(self, (GraphGtkNode*)self->selected_nodes->data);
-       self->selected_nodes = g_slist_remove(self->selected_nodes, (GraphGtkNode*)self->selected_nodes->data);
+       self->selected_nodes = g_list_remove(self->selected_nodes, (GraphGtkNode*)self->selected_nodes->data);
     }
 }
 
 void
 graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
 {
-  if(g_slist_find(self->nodes, node))
+  if(g_list_find(self->nodes, node))
     {
-      self->nodes = g_slist_remove(self->nodes, node);
+      self->nodes = g_list_remove(self->nodes, node);
 
-      GSList *pad;
+      GList *pad;
       for(pad = graph_gtk_node_get_input_pads(node); pad != NULL; pad = pad->next)
 	{
 	  graph_gtk_pad_disconnect((GraphGtkPad*)(pad->data));
@@ -459,20 +481,27 @@ graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
 void
 graph_gtk_view_clear(GraphGtkView* self)
 {
-  GSList* list;
+  GList* list;
   for(list = self->nodes; list != NULL; list = list->next)
     {
       g_object_unref(G_OBJECT(list->data));
     }
 
-  g_slist_free(self->nodes);
+  g_list_free(self->nodes);
   self->nodes = NULL;
 
   REDRAW();
 }
 
-GSList*
+GList*
 graph_gtk_view_get_nodes(GraphGtkView* self)
 {
-  return g_slist_copy(self->nodes); 
+  return g_list_copy(self->nodes); 
+}
+
+void
+graph_gtk_view_set_bg(GraphGtkView* self, cairo_surface_t* bg)
+{
+  self->bg = bg;
+  REDRAW();
 }

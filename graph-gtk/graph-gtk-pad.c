@@ -48,7 +48,7 @@ graph_gtk_pad_finalize (GObject *object)
 static void
 graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
 {
-  gboolean connected = (g_slist_length(self->connections) > 0);
+  gboolean connected = (g_list_length(self->connections) > 0);
 
   int x, y;
   graph_gtk_pad_get_position(self, &x, &y);
@@ -151,7 +151,7 @@ graph_gtk_pad_is_connected_to(GraphGtkPad* self, GraphGtkPad* other)
   if((self->is_output && other->is_output) || (!self->is_output && !other->is_output))
     return FALSE;
 
-  GSList* list;
+  GList* list;
   for(list = self->connections; list != NULL; list = list->next)
     {
       GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
@@ -209,10 +209,10 @@ graph_gtk_pad_connect_to(GraphGtkPad* source, GraphGtkPad* sink)
     {
       GraphGtkConnection *connection = graph_gtk_connection_new(source, sink);
 
-      source->connections = g_slist_append(source->connections, connection);
+      source->connections = g_list_append(source->connections, connection);
 
       graph_gtk_pad_disconnect(sink);
-      sink->connections = g_slist_append(sink->connections, connection);
+      sink->connections = g_list_append(sink->connections, connection);
     }
 }
 
@@ -220,7 +220,7 @@ graph_gtk_pad_connect_to(GraphGtkPad* source, GraphGtkPad* sink)
 void
 graph_gtk_pad_disconnect(GraphGtkPad* self)
 {
-  GSList* list;
+  GList* list;
   for(list = self->connections; list != NULL; list = list->next)
     {
       GraphGtkConnection *connection = (GraphGtkConnection*)list->data;
@@ -242,11 +242,11 @@ graph_gtk_pad_disconnect(GraphGtkPad* self)
 				self->node, self->name);
 	}
 
-      other->connections = g_slist_remove(other->connections, connection);
+      other->connections = g_list_remove(other->connections, connection);
 
       g_object_unref(connection);
     }
 
-  g_slist_free(self->connections);
+  g_list_free(self->connections);
   self->connections = NULL;
 }

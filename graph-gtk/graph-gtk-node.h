@@ -47,8 +47,8 @@ struct _GraphGtkNode
 
   GraphGtkView *view;
 
-  GSList *input_pads;
-  GSList *output_pads;
+  GList *input_pads;
+  GList *output_pads;
 
   const gchar *name;
 
@@ -74,9 +74,9 @@ void		graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name);
 const gchar*	graph_gtk_node_get_name(GraphGtkNode* self);
 void		graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo);
 void		graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output);
-GSList*		graph_gtk_node_get_pads(GraphGtkNode* self);
-GSList*		graph_gtk_node_get_input_pads(GraphGtkNode* self);
-GSList*		graph_gtk_node_get_output_pads(GraphGtkNode* self);
+GList*		graph_gtk_node_get_pads(GraphGtkNode* self);
+GList*		graph_gtk_node_get_input_pads(GraphGtkNode* self);
+GList*		graph_gtk_node_get_output_pads(GraphGtkNode* self);
 void		graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGtkNode* sink, const gchar* input_pad);
 gboolean	graph_gtk_node_recalculate_size(GraphGtkNode* self);
 gboolean	graph_gtk_node_is_within(GraphGtkNode* self, int x, int y);	//check whether this position is within the node
