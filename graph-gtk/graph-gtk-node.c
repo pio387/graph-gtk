@@ -337,7 +337,7 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
   GraphGtkPad *source_pad = NULL, *sink_pad = NULL;
 
   GList* list;
-  for(list = graph_gtk_node_get_pads(source); list != NULL; list++)
+  for(list = graph_gtk_node_get_pads(source); list != NULL; list = list->next)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
       if(0 == g_strcmp0(pad->name, output_pad))
@@ -347,7 +347,7 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 	}
     }
 
-  for(list = graph_gtk_node_get_pads(sink); list != NULL; list++)
+  for(list = graph_gtk_node_get_pads(sink); list != NULL; list = list->next)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
       if(0 == g_strcmp0(pad->name, input_pad))
