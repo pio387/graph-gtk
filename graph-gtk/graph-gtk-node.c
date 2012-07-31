@@ -316,7 +316,7 @@ graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo)
 GList*
 graph_gtk_node_get_pads(GraphGtkNode* self)
 {
-  return g_list_concat(self->input_pads, self->output_pads);
+  return g_list_concat(g_list_copy(self->input_pads), g_list_copy(self->output_pads));
 }
 
 GList* 
