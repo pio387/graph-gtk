@@ -264,7 +264,7 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       self->selected_nodes = NULL;
 
       GList *select = NULL;
-      for(nodes = self->nodes; nodes != NULL; nodes = nodes->next)
+      for(nodes = g_list_last(self->nodes); nodes != NULL; nodes = nodes->prev)
 	{
 	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
 	  GraphGtkPad *pad;
@@ -302,6 +302,12 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	{
 	  GraphGtkNode *node = nodes->data;
 	  g_signal_emit_by_name(widget, "node-selected", GRAPH_GTK_NODE(node));
+
+	  if(g_list_find(self->nodes, node))
+	    {
+	      self->nodes = g_list_remove(self->nodes, node);
+	      self->nodes = g_list_append(self->nodes, node);
+	    }
 
 
 	  if(!nodes->next && event->type == GDK_2BUTTON_PRESS)
