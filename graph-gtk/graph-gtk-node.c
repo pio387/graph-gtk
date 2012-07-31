@@ -272,6 +272,11 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
 	  image_w = self->img_width;
 	  image_h = (image_w/surface_w)*surface_h;
 	}
+      else if(self->img_width == -1 && self->img_height == -1)
+	{
+	  image_w = surface_w;
+	  image_h = surface_h;
+	}
 
       cairo_pattern_t *pattern = cairo_pattern_create_for_surface(self->image);
 
@@ -415,6 +420,11 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
 	  image_w = self->img_width;
 	  image_h = image_w/surface_w*surface_h;
 	}
+      else if(self->img_width == -1 && self->img_height == -1)
+	{
+	  image_w = surface_w;
+	  image_h = surface_h;
+	}
 
       self->width = MAX(self->width, image_w+8);
     }
@@ -495,8 +505,8 @@ graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean outpu
 gboolean
 graph_gtk_node_is_within(GraphGtkNode* self, int x, int y)
 {
-  if(x > self->x && x < self->x+self->width &&
-     y > self->y && y < self->y+self->height)
+  if(x > self->x+self->offset_x && x < self->x+self->offset_x+self->width &&
+     y > self->y+self->offset_y && y < self->y+self->offset_y+self->height)
     {
       return TRUE;
     }
