@@ -260,39 +260,41 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
       //cairo_set_source_surface(cr, self->image, 0, 0);
       gdouble surface_w = cairo_image_surface_get_width(self->image);
       gdouble surface_h = cairo_image_surface_get_height(self->image);
-
-      gdouble image_w = self->img_width, image_h = self->img_height;
-      if(self->img_width == -1 && self->img_height != -1)
+      if(surface_w > 0 && surface_h > 0)
 	{
-	  image_h = self->img_height;
-	  image_w = (image_h/surface_h)*surface_w;
+	  gdouble image_w = self->img_width, image_h = self->img_height;
+	  if(self->img_width == -1 && self->img_height != -1)
+	    {
+	      image_h = self->img_height;
+	      image_w = (image_h/surface_h)*surface_w;
+	    }
+	  else if(self->img_width != -1 && self->img_height == -1)
+	    {
+	      image_w = self->img_width;
+	      image_h = (image_w/surface_w)*surface_h;
+	    }
+	  else if(self->img_width == -1 && self->img_height == -1)
+	    {
+	      image_w = surface_w;
+	      image_h = surface_h;
+	    }
+
+	  cairo_pattern_t *pattern = cairo_pattern_create_for_surface(self->image);
+
+	  gdouble x = self->x+self->offset_x+4;
+	  gdouble y = self->y+self->offset_y+20;
+
+	  cairo_matrix_t transform;
+	  cairo_matrix_init_scale(&transform, surface_w/image_w, surface_h/image_h);
+	  cairo_matrix_translate(&transform, -x, -y);
+	  cairo_pattern_set_matrix(pattern, &transform);
+
+	  cairo_set_source(cr, pattern);
+	  cairo_rectangle(cr, x, y, image_w, image_h);
+	  cairo_fill(cr);
+
+	  cairo_pattern_destroy(pattern);
 	}
-      else if(self->img_width != -1 && self->img_height == -1)
-	{
-	  image_w = self->img_width;
-	  image_h = (image_w/surface_w)*surface_h;
-	}
-      else if(self->img_width == -1 && self->img_height == -1)
-	{
-	  image_w = surface_w;
-	  image_h = surface_h;
-	}
-
-      cairo_pattern_t *pattern = cairo_pattern_create_for_surface(self->image);
-
-      gdouble x = self->x+self->offset_x+4;
-      gdouble y = self->y+self->offset_y+20;
-
-      cairo_matrix_t transform;
-      cairo_matrix_init_scale(&transform, surface_w/image_w, surface_h/image_h);
-      cairo_matrix_translate(&transform, -x, -y);
-      cairo_pattern_set_matrix(pattern, &transform);
-
-      cairo_set_source(cr, pattern);
-      cairo_rectangle(cr, x, y, image_w, image_h);
-      cairo_fill(cr);
-
-      cairo_pattern_destroy(pattern);
     }
 }
 
@@ -407,26 +409,29 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
       gdouble surface_w = cairo_image_surface_get_width(self->image);
       gdouble surface_h = cairo_image_surface_get_height(self->image);
 
-      image_w = self->img_width;
-      image_h = self->img_height;
-
-      if(self->img_width == -1 && self->img_height != -1)
-	{
-	  image_h = self->img_height;
-	  image_w = image_h/surface_h*surface_w;
-	}
-      else if(self->img_width != -1 && self->img_height == -1)
+      if(surface_w > 0 && surface_h > 0)
 	{
 	  image_w = self->img_width;
-	  image_h = image_w/surface_w*surface_h;
-	}
-      else if(self->img_width == -1 && self->img_height == -1)
-	{
-	  image_w = surface_w;
-	  image_h = surface_h;
-	}
+	  image_h = self->img_height;
 
-      self->width = MAX(self->width, image_w+8);
+	  if(self->img_width == -1 && self->img_height != -1)
+	    {
+	      image_h = self->img_height;
+	      image_w = image_h/surface_h*surface_w;
+	    }
+	  else if(self->img_width != -1 && self->img_height == -1)
+	    {
+	      image_w = self->img_width;
+	      image_h = image_w/surface_w*surface_h;
+	    }
+	  else if(self->img_width == -1 && self->img_height == -1)
+	    {
+	      image_w = surface_w;
+	      image_h = surface_h;
+	    }
+
+	  self->width = MAX(self->width, image_w+8);
+	}
     }
   
   //Set pad positions and calculate height
@@ -437,7 +442,7 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
 
     pad->rel_x = self->width-4.5;
     pad->rel_y = 30+count*25;
-    if(self->show_image)
+    if(self->show_image && image_h > 0)
       pad->rel_y += image_h+6;
   }
 
@@ -448,7 +453,7 @@ graph_gtk_node_recalculate_size(GraphGtkNode* self)
 
     pad->rel_x = 5.5;
     pad->rel_y = 30+count*25;
-    if(self->show_image)
+    if(self->show_image && image_h > 0)
       pad->rel_y += image_h+6;
   }
 
