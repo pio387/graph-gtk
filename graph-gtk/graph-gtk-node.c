@@ -505,8 +505,8 @@ graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean outpu
 gboolean
 graph_gtk_node_is_within(GraphGtkNode* self, int x, int y)
 {
-  if(x > self->x+self->offset_x && x < self->x+self->offset_x+self->width &&
-     y > self->y+self->offset_y && y < self->y+self->offset_y+self->height)
+  if(x > self->x && x < self->x+self->width &&
+     y > self->y && y < self->y+self->height)
     {
       return TRUE;
     }

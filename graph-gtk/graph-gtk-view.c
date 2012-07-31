@@ -231,7 +231,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
       graph_gtk_pad_get_position(view->pad_connecting_from, &x, &y);
 
       cairo_move_to(cr, x, y);
-      cairo_line_to(cr, view->mouse_x, view->mouse_y);
+      cairo_line_to(cr, view->mouse_x+view->pan_x, view->mouse_y+view->pan_y);
 
       cairo_set_source_rgb(cr, 0.0, 1, 0.0);
       cairo_set_line_width(cr, 0.5);
@@ -269,14 +269,14 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
 	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
 	  GraphGtkPad *pad;
 
-	  if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
+	  if(pad = graph_gtk_node_is_on_pad(node, event->x+self->pan_x, event->y+self->pan_y))
 	    {
 	      self->is_mouse_connecting = TRUE;
 	      self->pad_connecting_from = pad;
 	      if(!pad->is_output)
 		graph_gtk_pad_disconnect(pad);
 	    }
-	  else if(graph_gtk_node_is_within(node, event->x, event->y))
+	  else if(graph_gtk_node_is_within(node, event->x+self->pan_x, event->y+self->pan_y))
 	    {
 	      node->is_selected = TRUE;
 	      deselect = g_list_remove(deselect, node);
