@@ -104,6 +104,17 @@ graph_gtk_view_class_init (GraphGtkViewClass *klass)
 	       G_TYPE_NONE,
 	       1,
 	       GRAPH_TYPE_GTK_NODE);
+
+  g_signal_new("node-rightclicked",
+	       GRAPH_TYPE_GTK_VIEW,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       1,
+	       GRAPH_TYPE_GTK_NODE);
 }
 
 static void
@@ -319,13 +330,25 @@ graph_gtk_view_button_pressed(GtkWidget* widget, GdkEventButton* event)
       g_list_free(deselect);
       g_list_free(select);
     }
-  else if(event->button == 3)
+  else if(event->button == 2)
     {
       self->is_mouse_panning = TRUE;
       self->pan_begin_x = event->x;
       self->pan_begin_y = event->y;
     }
-
+  else if(event->button == 3)
+    {
+      GList *nodes = NULL;
+      for(nodes = g_list_last(self->nodes); nodes != NULL; nodes = nodes->prev)
+	{
+	  GraphGtkNode *node = (GraphGtkNode*)nodes->data;
+	  if(graph_gtk_node_is_within(node, event->x+self->pan_x, event->y+self->pan_y))
+	    {
+	      g_signal_emit_by_name(widget, "node-rightclicked", GRAPH_GTK_NODE(node));
+	      break;
+	    }
+	}
+    }
   return FALSE;
 }
 
