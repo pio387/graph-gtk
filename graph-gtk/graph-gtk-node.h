@@ -39,6 +39,7 @@ struct _GraphGtkNodeClass
 {
   GObjectClass parent_class;
   void (*render_node) (GraphGtkNode* self, cairo_t* cairo);
+  gboolean (*recalculate_size) (GraphGtkNode *self);
 };
 
 struct _GraphGtkNode

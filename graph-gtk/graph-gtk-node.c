@@ -72,6 +72,7 @@ void cairo_image_surface_blur( cairo_surface_t* surface, double radius )
 static void graph_gtk_node_dispose (GObject *object);
 static void graph_gtk_node_finalize (GObject *object);
 static void graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cairo);
+static gboolean graph_gtk_node_recalculate_size_default(GraphGtkNode* self);
 
 G_DEFINE_TYPE (GraphGtkNode, graph_gtk_node, G_TYPE_OBJECT);
 
@@ -84,6 +85,7 @@ graph_gtk_node_class_init (GraphGtkNodeClass *klass)
   gobject_class->finalize = graph_gtk_node_finalize;
 
   klass->render_node = graph_gtk_node_render_default;
+  klass->recalculate_size = graph_gtk_node_recalculate_size_default;
 }
 
 static void
@@ -367,6 +369,14 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 
 gboolean
 graph_gtk_node_recalculate_size(GraphGtkNode* self)
+{
+  g_return_if_fail(IS_GRAPH_GTK_NODE(self));
+
+  return GRAPH_GTK_NODE_GET_CLASS(self)->recalculate_size(self);
+}
+
+gboolean
+graph_gtk_node_recalculate_size_default(GraphGtkNode* self)
 {
   GraphGtkView *view = self->view;
   if(!view)
