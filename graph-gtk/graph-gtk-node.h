@@ -75,6 +75,7 @@ void		graph_gtk_node_set_name(GraphGtkNode* self, const gchar* name);
 const gchar*	graph_gtk_node_get_name(GraphGtkNode* self);
 void		graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo);
 void		graph_gtk_node_add_pad(GraphGtkNode* self, const gchar* pad_name, gboolean output);
+void graph_gtk_node_remove_pads(GraphGtkNode *self);
 GList*		graph_gtk_node_get_pads(GraphGtkNode* self);
 GList*		graph_gtk_node_get_input_pads(GraphGtkNode* self);
 GList*		graph_gtk_node_get_output_pads(GraphGtkNode* self);

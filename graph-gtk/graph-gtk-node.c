@@ -575,3 +575,15 @@ graph_gtk_node_show_image(GraphGtkNode* self, gboolean show_image)
   self->show_image = show_image;
   graph_gtk_node_recalculate_size(self);
 }
+
+void
+graph_gtk_node_remove_pads(GraphGtkNode *self)
+{
+  g_list_free_full(self->output_pads, g_free);
+  g_list_free_full(self->input_pads, g_free);
+
+  self->output_pads = NULL;
+  self->input_pads = NULL;
+
+  graph_gtk_node_recalculate_size(self);
+}
