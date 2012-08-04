@@ -412,7 +412,7 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 	    }
 	}
     }
-  else if(event->button == 3)
+  else if(event->button == 2)
     {
       if(self->is_mouse_panning)
 	{
