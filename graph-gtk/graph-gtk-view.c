@@ -187,20 +187,22 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
       gdouble bg_w = cairo_image_surface_get_width(view->bg);
       gdouble bg_h = cairo_image_surface_get_height(view->bg);
 
+      if(bg_w > 0 && bg_h > 0)
+	{
+	  gint width = gdk_window_get_width(widget->window);
+	  gint height = gdk_window_get_height(widget->window);
 
-      gint width = gdk_window_get_width(widget->window);
-      gint height = gdk_window_get_height(widget->window);
+	  cairo_pattern_t *pattern = cairo_pattern_create_for_surface(view->bg);
+	  cairo_matrix_t transform;
+	  cairo_matrix_init_translate(&transform, -(width/2-bg_w/2), -(height/2-bg_h/2));
+	  cairo_pattern_set_matrix(pattern, &transform);
 
-      cairo_pattern_t *pattern = cairo_pattern_create_for_surface(view->bg);
-      cairo_matrix_t transform;
-      cairo_matrix_init_translate(&transform, -(width/2-bg_w/2), -(height/2-bg_h/2));
-      cairo_pattern_set_matrix(pattern, &transform);
+	  cairo_set_source(cr, pattern);
+	  cairo_rectangle(cr, width/2-bg_w/2, height/2-bg_h/2, bg_w, bg_h);
+	  cairo_fill(cr);
 
-      cairo_set_source(cr, pattern);
-      cairo_rectangle(cr, width/2-bg_w/2, height/2-bg_h/2, bg_w, bg_h);
-      cairo_fill(cr);
-
-      cairo_pattern_destroy(pattern);
+	  cairo_pattern_destroy(pattern);
+	}
     }
 
   cairo_translate(cr, -view->pan_x, -view->pan_y);
