@@ -550,3 +550,84 @@ graph_gtk_view_set_bg(GraphGtkView* self, cairo_surface_t* bg)
   self->bg = bg;
   REDRAW();
 }
+
+static void assign_rank(GraphGtkNode *node, gint rank)
+{
+  if(rank > node->rank)
+    node->rank = rank;
+
+  GList *output_pads;
+  for(output_pads = graph_gtk_node_get_output_pads(node); output_pads != NULL; output_pads = output_pads->next)
+    {
+      GraphGtkPad *pad = output_pads->data;
+      GList *connections;
+      for(connections = pad->connections; connections != NULL; connections = connections->next)
+	{
+	  GraphGtkConnection *conn = connections->data;
+	  assign_rank(conn->sink->node, rank+1);
+	}
+    }
+}
+
+void
+graph_gtk_view_arrange(GraphGtkView* self)
+{
+  GList *list;
+  for(list = self->nodes; list != NULL; list = list->next)
+    {
+      GraphGtkNode *node = GRAPH_GTK_NODE(list->data);
+      node->rank = 0;
+    }
+
+  GList *roots = NULL;
+  for(list = self->nodes; list != NULL; list = list->next)
+    {
+      GraphGtkNode *node = GRAPH_GTK_NODE(list->data);
+
+      gboolean root = TRUE;
+
+      GList *input_pads;
+      for(input_pads = graph_gtk_node_get_input_pads(node); input_pads != NULL; input_pads = input_pads->next)
+	{
+	  GraphGtkPad *pad = input_pads->data;
+	  if(g_list_length(pad->connections) > 0)
+	    root = FALSE;
+	}
+      
+      if(root)
+	{
+	  roots = g_list_append(roots, node);
+	}
+    }
+
+  for(list = roots; list != NULL; list = list->next)
+    {
+      GraphGtkNode *node = GRAPH_GTK_NODE(list->data);
+      assign_rank(node, 1);
+    }
+
+  GHashTable *hash = g_hash_table_new(g_int_hash, g_int_equal);
+
+  for(list = self->nodes; list != NULL; list = list->next)
+    {
+      GraphGtkNode *node = GRAPH_GTK_NODE(list->data);
+
+      int *rank_num = g_hash_table_lookup(hash, &(node->rank));
+
+      if(rank_num == NULL)
+	{
+	  rank_num = g_new(gint, 1);
+	  *rank_num = 1;
+	  g_hash_table_insert(hash, &(node->rank), rank_num);
+	}
+      else
+	{
+	  *rank_num += 1;
+	}
+
+      node->x = (node->rank-1) * 160;
+      node->y = (*rank_num-1) * 100;
+
+      //g_hash_table_insert(hash, (gpointer)node->rank, (gpointer)((gint)g_hash_table_lookup(hash, (gpointer)node->rank)+1));
+    }
+}
