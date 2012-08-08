@@ -574,6 +574,7 @@ static void assign_rank(GraphGtkNode *node, gint rank)
 void
 graph_gtk_view_arrange(GraphGtkView* self)
 {
+  REDRAW();
   GList *list;
   for(list = self->nodes; list != NULL; list = list->next)
     {
