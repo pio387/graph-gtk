@@ -86,6 +86,18 @@ graph_gtk_node_class_init (GraphGtkNodeClass *klass)
 
   klass->render_node = graph_gtk_node_render_default;
   klass->recalculate_size = graph_gtk_node_recalculate_size_default;
+
+  //Let applications connect to this signal to add to the rendering process without having to subclass GraphGtkNode
+  g_signal_new("post-render",
+	       GRAPH_TYPE_GTK_NODE,
+	       G_SIGNAL_RUN_FIRST,
+	       0, //no class method
+	       NULL, //no accumulator,
+	       NULL,
+	       NULL,
+	       G_TYPE_NONE,
+	       1,
+	       G_TYPE_POINTER /*cairo_t*/);
 }
 
 static void
@@ -315,6 +327,8 @@ graph_gtk_node_render(GraphGtkNode* self, cairo_t* cairo)
     self->failed_size_calculation = !graph_gtk_node_recalculate_size(self);
 
   GRAPH_GTK_NODE_GET_CLASS(self)->render_node(self, cairo);
+
+  g_signal_emit_by_name(self, "post-render", cairo);
 }
 
 GList*
@@ -579,8 +593,12 @@ graph_gtk_node_show_image(GraphGtkNode* self, gboolean show_image)
 void
 graph_gtk_node_remove_pads(GraphGtkNode *self)
 {
+  //memory leak
+
+  /*
   g_list_free_full(self->output_pads, g_free);
   g_list_free_full(self->input_pads, g_free);
+  */
 
   self->output_pads = NULL;
   self->input_pads = NULL;
