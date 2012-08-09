@@ -408,7 +408,7 @@ graph_gtk_view_button_released(GtkWidget* widget, GdkEventButton* event)
 	      GraphGtkNode *node = (GraphGtkNode*)nodes->data;
 	      GraphGtkPad *pad;
 
-	      if(pad = graph_gtk_node_is_on_pad(node, event->x, event->y))
+	      if(pad = graph_gtk_node_is_on_pad(node, event->x+self->pan_x, event->y+self->pan_y))
 		{
 		  REDRAW();
 		  self->is_mouse_connecting = FALSE;
