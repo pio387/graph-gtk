@@ -164,11 +164,13 @@ graph_gtk_view_finalize (GObject *object)
 static gboolean
 graph_gtk_view_expose (GtkWidget *widget, GdkEventExpose *event)
 {
-  cairo_t *cr = gdk_cairo_create(widget->window);
+  cairo_t *cr = gdk_cairo_create (event->window);
+  gdk_cairo_region (cr, event->region);
+  cairo_clip (cr);
 
-  graph_gtk_view_draw(widget, cr);
+  graph_gtk_view_draw (widget, cr);
 
-  cairo_destroy(cr);
+  cairo_destroy (cr);
 
   return FALSE;
 }
@@ -189,8 +191,10 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 
       if(bg_w > 0 && bg_h > 0)
 	{
-	  gint width = gdk_window_get_width(widget->window);
-	  gint height = gdk_window_get_height(widget->window);
+	  gint width =
+            gdk_window_get_width (gtk_widget_get_window (widget));
+	  gint height =
+	    gdk_window_get_height (gtk_widget_get_window (widget));
 
 	  cairo_pattern_t *pattern = cairo_pattern_create_for_surface(view->bg);
 	  cairo_matrix_t transform;

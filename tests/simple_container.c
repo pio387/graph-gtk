@@ -92,18 +92,18 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
       gtk_box_pack_start(GTK_BOX(vbox), columns, TRUE, TRUE, 0);
 
       GtkWidget* left_column = gtk_vbox_new(FALSE, 0);
-      gtk_box_pack_start_defaults(GTK_BOX(columns), left_column);
+      gtk_box_pack_start(GTK_BOX(columns), left_column, TRUE, TRUE, 0);
       gtk_box_pack_start(GTK_BOX(left_column), gtk_label_new("Inputs"), FALSE, FALSE, 0);
 
       GtkWidget* right_column = gtk_vbox_new(FALSE, 0);
-      gtk_box_pack_start_defaults(GTK_BOX(columns), right_column);
+      gtk_box_pack_start(GTK_BOX(columns), right_column, TRUE, TRUE, 0);
       gtk_box_pack_start(GTK_BOX(right_column), gtk_label_new("Outputs"), FALSE, FALSE, 0);
 
       GtkWidget* inputs = gtk_vbox_new(FALSE, 0);
-      gtk_box_pack_start_defaults(GTK_BOX(left_column), inputs);
+      gtk_box_pack_start(GTK_BOX(left_column), inputs, TRUE, TRUE, 0);
 
       GtkWidget* outputs = gtk_vbox_new(FALSE, 0);
-      gtk_box_pack_start_defaults(GTK_BOX(right_column), outputs);
+      gtk_box_pack_start(GTK_BOX(right_column), outputs, TRUE, TRUE, 0);
 
       GtkWidget* add_input = gtk_button_new_with_label("Add");
       g_signal_connect(add_input, "clicked", (GCallback)button_clicked, inputs);
