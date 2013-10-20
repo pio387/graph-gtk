@@ -168,9 +168,8 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
       cairo_surface_flush(shadow);
       cairo_image_surface_blur(shadow, 2);
 
-      // FIXME: Original code
-      // int offset = 3.5;
-      int offset = 3;
+      
+      float offset = 3.5;
       cairo_set_source_surface(cr, shadow, (self->x+self->offset_x)-25+offset, (self->y+self->offset_y)-25+offset);
       //cairo_rectangle(cr, (self->x+self->offset_x)-10, (self->y+self->offset_y)-10, (self->x+self->offset_x)+20, (self->y+self->offset_y)+20);
       cairo_paint(cr);
