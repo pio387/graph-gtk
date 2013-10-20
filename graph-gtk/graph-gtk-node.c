@@ -175,7 +175,7 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
       //cairo_rectangle(cr, (self->x+self->offset_x)-10, (self->y+self->offset_y)-10, (self->x+self->offset_x)+20, (self->y+self->offset_y)+20);
       cairo_paint(cr);
 
-      cairo_surface_finish(shadow);
+      cairo_surface_destroy (shadow);
       cairo_destroy(shadow_context);
     }
 
@@ -237,7 +237,7 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
 	    M_PI, -M_PI/2.0);
   cairo_close_path(cr); //probably unecessary
 
-  cairo_pattern_t *gradient = cairo_pattern_create_linear(0, -15, 0, 25);
+  cairo_pattern_t *gradient = cairo_pattern_create_linear (0, -15, 0, 25);
 
   if(!self->is_selected)
     {
@@ -254,22 +254,28 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
   cairo_set_line_width(cr, 0.5);
   cairo_stroke(cr);
 
+  cairo_pattern_destroy (gradient);
+
   cairo_select_font_face (cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, 14);
   cairo_set_source_rgb(cr, 200.0/256.0, 200.0/256.0, 200.0/256.0);
   cairo_move_to(cr, (self->x+self->offset_x)+4, (self->y+self->offset_y)+13);
   cairo_show_text(cr, self->name);
 
-  GList *pad;
-  for(pad = graph_gtk_node_get_input_pads(self); pad != NULL; pad = pad->next)
+  GList *pad, *ref;
+  ref = graph_gtk_node_get_input_pads (self);
+  for(pad = ref; pad != NULL; pad = pad->next)
     {
       graph_gtk_pad_render((GraphGtkPad*)pad->data, cr);
     }
+  g_list_free (ref);
 
-  for(pad = graph_gtk_node_get_output_pads(self); pad != NULL; pad = pad->next)
+  ref = graph_gtk_node_get_output_pads(self);
+  for(pad = ref; pad != NULL; pad = pad->next)
     {
       graph_gtk_pad_render((GraphGtkPad*)pad->data, cr);
     }
+  g_list_free (ref);
 
   if(self->show_image && self->image)
     {
@@ -356,8 +362,9 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 {
   GraphGtkPad *source_pad = NULL, *sink_pad = NULL;
 
-  GList* list;
-  for(list = graph_gtk_node_get_pads(source); list != NULL; list = list->next)
+  GList *list, *ref;
+  ref = graph_gtk_node_get_pads (source);
+  for(list = ref; list != NULL; list = list->next)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
       if(0 == g_strcmp0(pad->name, output_pad))
@@ -366,8 +373,10 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 	  break;
 	}
     }
+  g_list_free (ref);
 
-  for(list = graph_gtk_node_get_pads(sink); list != NULL; list = list->next)
+  ref = graph_gtk_node_get_pads (sink);
+  for(list = ref; list != NULL; list = list->next)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
       if(0 == g_strcmp0(pad->name, input_pad))
@@ -376,6 +385,7 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 	  break;
 	}
     }
+  g_list_free (ref);
 
   if(!source_pad || !sink_pad)
     return;
@@ -552,24 +562,28 @@ graph_gtk_node_is_within(GraphGtkNode* self, int x, int y)
 GraphGtkPad*
 graph_gtk_node_is_on_pad(GraphGtkNode* self, int x, int y)
 {
-  GList *list;
   int px, py;
 
-  for(list = graph_gtk_node_get_input_pads(self); list != NULL; list = list->next)
+  GList *list, *ref;
+  ref = graph_gtk_node_get_input_pads (self);
+  for(list = ref; list != NULL; list = list->next)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
       graph_gtk_pad_get_position(pad, &px, &py);
       if(x > px-5 && x < px+5 && y > py-5 && y < py+5)
 	return pad;
     }
+  g_list_free (ref);
 
-  for(list = graph_gtk_node_get_output_pads(self); list != NULL; list = list->next)
+  ref = graph_gtk_node_get_output_pads (self);
+  for(list = ref; list != NULL; list = list->next)
     {
       GraphGtkPad *pad = (GraphGtkPad*)list->data;
       graph_gtk_pad_get_position(pad, &px, &py);
       if(x > px-5 && x < px+5 && y > py-5 && y < py+5)
 	return pad;
     }
+  g_list_free (ref);
 
   return NULL;
 }

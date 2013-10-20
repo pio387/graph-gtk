@@ -181,6 +181,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 {
   GraphGtkView *view = GRAPH_GTK_VIEW(widget);
 
+  // view background
   cairo_set_source_rgb(cr, 124.0/256.0, 124.0/256.0, 124.0/256.0);
   cairo_paint(cr);
 
@@ -221,7 +222,8 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
     {
       GraphGtkNode *node = (GraphGtkNode*)nodes->data;
 
-      GList *pads;
+      GList *pads, *ref;
+      /*
       for(pads = graph_gtk_node_get_input_pads(node); pads != NULL; pads = pads->next)
 	{
 	  GraphGtkPad *pad = (GraphGtkPad*)pads->data;
@@ -232,8 +234,9 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 	      graph_gtk_connection_render(connection, cr);
 	    }
 	}
-
-      for(pads = graph_gtk_node_get_output_pads(node); pads != NULL; pads = pads->next)
+      */
+      ref = graph_gtk_node_get_output_pads (node);
+      for(pads = ref; pads != NULL; pads = pads->next)
 	{
 	  GraphGtkPad *pad = (GraphGtkPad*)pads->data;
 	  GList *connections;
@@ -243,6 +246,7 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 	      graph_gtk_connection_render(connection, cr);
 	    }
 	}
+      g_list_free (ref);
     }
 
   GList* list;
@@ -262,6 +266,28 @@ graph_gtk_view_draw(GtkWidget *widget, cairo_t* cr)
 
       cairo_set_source_rgb(cr, 0.0, 1, 0.0);
       cairo_set_line_width(cr, 0.5);
+      cairo_stroke(cr);
+
+      // FIXME: Factor this out
+      int from_x, from_y, to_x, to_y;
+      from_x = x;
+      from_y = y;
+      to_x = view->mouse_x + view->pan_x;
+      to_y = view->mouse_y + view->pan_y;
+
+      cairo_set_line_width(cr, 1);
+      cairo_set_source_rgb(cr, 0, 0, 0);
+
+      cairo_move_to(cr, from_x, from_y);
+
+      gdouble offset =
+	((to_x > from_x) ? ((to_x-from_x)/2) : ((from_x-to_x)/2))
+	+ ABS(from_y-to_y)/6;
+
+      cairo_curve_to(cr, from_x+offset, from_y,
+		   to_x-offset, to_y,
+		   to_x, to_y);
+
       cairo_stroke(cr);
     }
 
@@ -514,20 +540,24 @@ graph_gtk_view_remove_node(GraphGtkView* self, GraphGtkNode* node)
     {
       self->nodes = g_list_remove(self->nodes, node);
 
-      GList *pad;
-      for(pad = graph_gtk_node_get_input_pads(node); pad != NULL; pad = pad->next)
+      GList *pad, *ref;
+      ref = graph_gtk_node_get_input_pads (node);
+      for(pad = ref; pad != NULL; pad = pad->next)
 	{
-	  graph_gtk_pad_disconnect((GraphGtkPad*)(pad->data));
+	  graph_gtk_pad_disconnect ((GraphGtkPad*) (pad->data));
 	}
+      g_list_free (ref);
 
-      for(pad = graph_gtk_node_get_output_pads(node); pad != NULL; pad = pad->next)
+      ref = graph_gtk_node_get_output_pads (node);
+      for(pad = ref; pad != NULL; pad = pad->next)
 	{
-	  graph_gtk_pad_disconnect((GraphGtkPad*)(pad->data));
+	  graph_gtk_pad_disconnect ((GraphGtkPad*) (pad->data));
 	}
+      g_list_free (ref);
       
-      g_object_unref(G_OBJECT(node));
+      g_object_unref (G_OBJECT (node));
 
-      REDRAW();
+      REDRAW ();
     }
 }
 
