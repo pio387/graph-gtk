@@ -7,6 +7,6 @@ includedir=@includedir@
 Name: GRAPH-GTK
 Description: GRAPH MANIPULATION WIDGET 
 Version: @VERSION@
-Requires: gtk+-2.0
+Requires: gtk+-3.0
 Libs: -L${libdir} -l@PACKAGE_NAME@
 Cflags: -I${includedir}/@PACKAGE_NAME@/

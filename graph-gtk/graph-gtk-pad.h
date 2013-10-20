@@ -3,6 +3,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include "graph-gtk-types.h"
 
 G_BEGIN_DECLS
 
@@ -26,12 +27,6 @@ G_BEGIN_DECLS
    (G_TYPE_INSTANCE_GET_CLASS ((obj),                                   \
                                GRAPH_TYPE_GTK_PAD,                      \
                                GraphGtkPadClass))
-
-struct _GraphGtkNode;
-typedef struct _GraphGtkNode GraphGtkNode;
-
-typedef struct _GraphGtkPad      GraphGtkPad;
-typedef struct _GraphGtkPadClass GraphGtkPadClass;
 
 struct _GraphGtkPadClass
 {

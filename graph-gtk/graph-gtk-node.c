@@ -21,7 +21,7 @@ void cairo_image_surface_blur( cairo_surface_t* surface, double radius )
     
   // The number of times to perform the averaging. According to wikipedia,
   // three iterations is good enough to pass for a gaussian.
-  const MAX_ITERATIONS = 3; 
+  const int MAX_ITERATIONS = 3; 
   int iteration;
 
   memcpy( dst, src, width*height*4 );
@@ -168,7 +168,9 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
       cairo_surface_flush(shadow);
       cairo_image_surface_blur(shadow, 2);
 
-      int offset = 3.5;
+      // FIXME: Original code
+      // int offset = 3.5;
+      int offset = 3;
       cairo_set_source_surface(cr, shadow, (self->x+self->offset_x)-25+offset, (self->y+self->offset_y)-25+offset);
       //cairo_rectangle(cr, (self->x+self->offset_x)-10, (self->y+self->offset_y)-10, (self->x+self->offset_x)+20, (self->y+self->offset_y)+20);
       cairo_paint(cr);
@@ -252,7 +254,7 @@ graph_gtk_node_render_default(GraphGtkNode* self, cairo_t* cr)
   cairo_set_line_width(cr, 0.5);
   cairo_stroke(cr);
 
-  cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_select_font_face (cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, 14);
   cairo_set_source_rgb(cr, 200.0/256.0, 200.0/256.0, 200.0/256.0);
   cairo_move_to(cr, (self->x+self->offset_x)+4, (self->y+self->offset_y)+13);
@@ -384,7 +386,9 @@ graph_gtk_node_connect_to(GraphGtkNode* source, const gchar* output_pad, GraphGt
 gboolean
 graph_gtk_node_recalculate_size(GraphGtkNode* self)
 {
-  g_return_if_fail(IS_GRAPH_GTK_NODE(self));
+  // FIXME: According to glib docs, cannot use macro
+  // on functions that return a value
+  // g_return_if_fail(IS_GRAPH_GTK_NODE(self));
 
   return GRAPH_GTK_NODE_GET_CLASS(self)->recalculate_size(self);
 }
@@ -417,7 +421,7 @@ graph_gtk_node_recalculate_size_default(GraphGtkNode* self)
   GtkWidget *widget = GTK_WIDGET(view);
   cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
 
-  cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_select_font_face (cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_set_font_size(cr, 13);
       
   cairo_text_extents(cr, self->name, &extents);
@@ -475,7 +479,9 @@ graph_gtk_node_recalculate_size_default(GraphGtkNode* self)
   for(list = self->input_pads, count = 0; list != NULL; list = list->next, count++) {
     GraphGtkPad *pad = (GraphGtkPad*)list->data;
 
-    pad->rel_x = 5.5;
+    // FIXME: Original code below
+    // pad->rel_x = 5.5;
+    pad->rel_x = 5;
     pad->rel_y = 30+count*25;
     if(self->show_image && image_h > 0)
       pad->rel_y += image_h+6;

@@ -1,6 +1,6 @@
 #include "graph-gtk-connection.h"
 
-#include <math.h>
+#include <glib.h>
 
 static void graph_gtk_connection_dispose (GObject *object);
 static void graph_gtk_connection_finalize (GObject *object);
@@ -56,7 +56,7 @@ graph_gtk_connection_default_render(GraphGtkConnection* self, cairo_t* cr)
 
   gdouble offset = 
     ((to_x > from_x) ? ((to_x-from_x)/2) : ((from_x-to_x)/2))
-    + abs(from_y-to_y)/6;
+    + ABS(from_y-to_y)/6;
 
   /*  if(to_x - from_x > 100)
     cairo_curve_to(cr, (from_x+to_x)/2, from_y,

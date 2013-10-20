@@ -2,6 +2,9 @@
 #include <graph-gtk-view.h>
 #include <graph-gtk-node.h>
 
+#include <glib.h>
+#include <glib/gi18n.h>
+
 static void menu_item_activated (GtkMenuItem*, gpointer);
 static void button_clicked(GtkButton*, gpointer);
 static void node_selected(GraphGtkView *view, GraphGtkNode *node, gpointer user_data);
@@ -25,7 +28,8 @@ main(gint argc,
   g_signal_connect(graphView, "nodes-connected", G_CALLBACK(nodes_connected), NULL);
   g_signal_connect(graphView, "nodes-disconnected", G_CALLBACK(nodes_disconnected), NULL);
 
-  GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
+  GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_box_set_homogeneous(GTK_BOX (vbox), FALSE);
   gtk_container_add(GTK_CONTAINER(window), vbox);
 
   //Build the menu
@@ -75,8 +79,8 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
       GtkWidget* dialog = gtk_dialog_new_with_buttons ("Add Node",
 						       GTK_WINDOW(gtk_widget_get_ancestor (GTK_WIDGET(menu_item), GTK_TYPE_WINDOW)),
 						       GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-						       GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-						       GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+						       _("_OK"), GTK_RESPONSE_ACCEPT,
+						       _("_CANCEL"), GTK_RESPONSE_REJECT,
 						       NULL);
 
       gtk_window_set_default_size(GTK_WINDOW(dialog), 350, 80);
@@ -88,21 +92,26 @@ static void menu_item_activated (GtkMenuItem* menu_item, gpointer data)
       gtk_box_pack_start(GTK_BOX(vbox), name_label, FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(vbox), name_entry, FALSE, FALSE, 0);
 
-      GtkWidget* columns = gtk_hbox_new(TRUE, 0);
+      GtkWidget *columns = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+      gtk_box_set_homogeneous(GTK_BOX (columns), FALSE);
       gtk_box_pack_start(GTK_BOX(vbox), columns, TRUE, TRUE, 0);
 
-      GtkWidget* left_column = gtk_vbox_new(FALSE, 0);
+      GtkWidget *left_column = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+      gtk_box_set_homogeneous(GTK_BOX (left_column), FALSE);
       gtk_box_pack_start(GTK_BOX(columns), left_column, TRUE, TRUE, 0);
       gtk_box_pack_start(GTK_BOX(left_column), gtk_label_new("Inputs"), FALSE, FALSE, 0);
 
-      GtkWidget* right_column = gtk_vbox_new(FALSE, 0);
+      GtkWidget *right_column = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+      gtk_box_set_homogeneous(GTK_BOX (right_column), FALSE);
       gtk_box_pack_start(GTK_BOX(columns), right_column, TRUE, TRUE, 0);
       gtk_box_pack_start(GTK_BOX(right_column), gtk_label_new("Outputs"), FALSE, FALSE, 0);
 
-      GtkWidget* inputs = gtk_vbox_new(FALSE, 0);
+      GtkWidget *inputs = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+      gtk_box_set_homogeneous(GTK_BOX (inputs), FALSE);
       gtk_box_pack_start(GTK_BOX(left_column), inputs, TRUE, TRUE, 0);
 
-      GtkWidget* outputs = gtk_vbox_new(FALSE, 0);
+      GtkWidget *outputs = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+      gtk_box_set_homogeneous(GTK_BOX (outputs), FALSE);
       gtk_box_pack_start(GTK_BOX(right_column), outputs, TRUE, TRUE, 0);
 
       GtkWidget* add_input = gtk_button_new_with_label("Add");

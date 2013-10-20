@@ -74,7 +74,7 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_set_source_rgb(cr, 132.0/256.0, 132.0/256.0, 132.0/256.0);
       cairo_stroke(cr);
 
-      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_select_font_face (cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
       cairo_set_font_size(cr, 13);
       
       cairo_text_extents_t extents;
@@ -106,7 +106,7 @@ graph_gtk_pad_default_render(GraphGtkPad* self, cairo_t* cr)
       cairo_set_source_rgb(cr, 132.0/256.0, 132.0/256.0, 132.0/256.0);
       cairo_stroke(cr);
 
-      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_select_font_face (cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
       cairo_set_font_size(cr, 13);
       
       cairo_text_extents_t extents;
@@ -180,7 +180,7 @@ graph_gtk_pad_get_width(GraphGtkPad* self)
       GtkWidget *widget = GTK_WIDGET(view);
       cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
 
-      cairo_select_font_face (cr, "FreeSerif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+      cairo_select_font_face (cr, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
       cairo_set_font_size(cr, 13);
       
       cairo_text_extents_t extents;

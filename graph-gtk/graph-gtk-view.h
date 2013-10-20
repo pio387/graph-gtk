@@ -2,6 +2,7 @@
 #define __GRAPH_GTK_VIEW_H__
 
 #include <gtk/gtk.h>
+#include "graph-gtk-types.h"
 
 /**
    GraphGtkView:
@@ -34,15 +35,6 @@ G_BEGIN_DECLS
    (G_TYPE_INSTANCE_GET_CLASS ((obj),                                   \
                                GRAPH_TYPE_GTK_VIEW,                     \
                                GraphGtkViewClass))
-
-struct _GraphGtkPad;
-typedef struct _GraphGtkPad GraphGtkPad;
-
-struct _GraphGtkNode;
-typedef struct _GraphGtkNode GraphGtkNode;
-
-typedef struct _GraphGtkView      GraphGtkView;
-typedef struct _GraphGtkViewClass GraphGtkViewClass;
 
 struct _GraphGtkViewClass
 {
